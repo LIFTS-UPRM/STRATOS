@@ -8,6 +8,22 @@ It is designed to replace fragmented HAB workflows with one integrated system th
 
 ---
 
+## Table of Contents
+
+1. [Mission Intelligence for High-Altitude Balloon Operations](#mission-intelligence-for-high-altitude-balloon-operations)
+2. [Core Modules](#core-modules)
+   - [Chat](#chat)
+   - [Pre-Flight](#pre-flight)
+   - [Mission Control](#mission-control)
+   - [Post-Flight](#post-flight)
+3. [Why STRATOS](#why-stratos)
+4. [Who It’s For](#who-its-for)
+5. [Vision](#vision)
+6. [Status](#status)
+7. [Credits](#credits)
+
+---
+
 ## Mission Intelligence for High-Altitude Balloon Operations
 
 High-altitude balloon missions are often managed through disconnected tools and manual workflows:
@@ -33,11 +49,11 @@ It allows users to interact with mission tools and documents through natural lan
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
 **Examples of what Chat can do:**
-- query trajectory and weather tools
-- access and summarize mission documentation
-- answer questions about procedures and prior flights
-- support planning decisions before launch
-- provide contextual assistance during and after the mission
+- query trajectory and weather tools  
+- access and summarize mission documentation  
+- answer questions about procedures and prior flights  
+- support planning decisions before launch  
+- provide contextual assistance during and after the mission  
 
 ---
 
@@ -50,11 +66,11 @@ It is centered around a smart mission checklist that supports operational readin
 The goal is to reduce missed steps, improve consistency, and make launch readiness easier to assess.
 
 **Pre-Flight capabilities include:**
-- mission setup and configuration
-- launch preparation checklist
-- AI-assisted readiness review
-- GO / NO-GO support
-- planning guidance before launch
+- mission setup and configuration  
+- launch preparation checklist  
+- AI-assisted readiness review  
+- GO / NO-GO support  
+- planning guidance before launch  
 
 ---
 
@@ -67,11 +83,11 @@ It combines a real-time map interface with telemetry monitoring and trajectory a
 This module is designed for active flight operations and recovery coordination.
 
 **Mission Control capabilities include:**
-- live telemetry map view
-- real-time position and altitude tracking
-- updated landing prediction during flight
-- comparison between predicted path and actual path
-- live operational awareness for controllers and recovery teams
+- live telemetry map view  
+- real-time position and altitude tracking  
+- updated landing prediction during flight  
+- comparison between predicted path and actual path  
+- live operational awareness for controllers and recovery teams  
 
 ---
 
@@ -84,11 +100,11 @@ STRATOS can connect to onboard hardware such as a **Raspberry Pi**, ingest colle
 This creates a consistent postflight workflow so teams can move from raw recovered files to structured insights faster.
 
 **Post-Flight capabilities include:**
-- connect recovered onboard systems such as Raspberry Pi
-- ingest mission data and logs
-- clean and normalize raw datasets
-- analyze flight performance
-- support learning and iteration for future missions
+- connect recovered onboard systems such as Raspberry Pi  
+- ingest mission data and logs  
+- clean and normalize raw datasets  
+- analyze flight performance  
+- support learning and iteration for future missions  
 
 ---
 
@@ -98,10 +114,10 @@ STRATOS is built to serve as a **mission operating system** for HAB teams.
 
 Instead of switching between separate software, documents, dashboards, and scripts, teams can work inside one environment that supports the full mission lifecycle:
 
-- **Plan** the mission
-- **Prepare** for launch
-- **Control** the flight
-- **Analyze** the results
+- **Plan** the mission  
+- **Prepare** for launch  
+- **Control** the flight  
+- **Analyze** the results  
 
 ---
 
@@ -109,11 +125,11 @@ Instead of switching between separate software, documents, dashboards, and scrip
 
 STRATOS is designed for:
 
-- student engineering teams
-- university research groups
-- high-altitude balloon programs
-- near-space experimentation projects
-- teams that need a more organized and intelligent flight workflow
+- student engineering teams  
+- university research groups  
+- high-altitude balloon programs  
+- near-space experimentation projects  
+- teams that need a more organized and intelligent flight workflow  
 
 ---
 
@@ -128,3 +144,14 @@ The long-term goal is to provide a system where mission knowledge, live telemetr
 ## Status
 
 Concept in development.
+
+---
+
+## Credits
+
+This project builds upon and is inspired by existing work in the high-altitude balloon and telemetry ecosystem.
+
+- Mission Support Telemetry  
+  https://github.com/INSOJO/mission-support-telemetry  
+
+Additional credits and acknowledgments will be added as STRATOS evolves.
