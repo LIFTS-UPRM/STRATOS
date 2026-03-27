@@ -50,6 +50,7 @@ It allows users to interact with mission tools and documents through natural lan
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
 **Examples of what Chat can do:**
+
 - query trajectory and weather tools  
 - access and summarize mission documentation  
 - answer questions about procedures and prior flights  
@@ -67,6 +68,7 @@ It is centered around a smart mission checklist that supports operational readin
 The goal is to reduce missed steps, improve consistency, and make launch readiness easier to assess.
 
 **Pre-Flight capabilities include:**
+
 - mission setup and configuration  
 - launch preparation checklist  
 - AI-assisted readiness review  
@@ -84,6 +86,7 @@ It combines a real-time map interface with telemetry monitoring and trajectory a
 This module is designed for active flight operations and recovery coordination.
 
 **Mission Control capabilities include:**
+
 - live telemetry map view  
 - real-time position and altitude tracking  
 - updated landing prediction during flight  
@@ -101,6 +104,7 @@ STRATOS can connect to onboard hardware such as a **Raspberry Pi**, ingest colle
 This creates a consistent postflight workflow so teams can move from raw recovered files to structured insights faster.
 
 **Post-Flight capabilities include:**
+
 - connect recovered onboard systems such as Raspberry Pi  
 - ingest mission data and logs  
 - clean and normalize raw datasets  
@@ -153,14 +157,17 @@ STRATOS currently exposes mission operations through FastMCP servers located in 
 File: `backend/mcp_servers/notam_server.py`
 
 Tool:
+
 - `check_notam_airspace(latitude, longitude, radius_km=25.0, launch_datetime="", faa_client_id="", faa_client_secret="")`
 
 What it does:
+
 - queries NOTAM sources (FAA when credentials are provided, plus AviationWeather)
 - filters and scores balloon-relevant advisories
 - returns a launch-airspace clearance recommendation
 
 Key outputs:
+
 - `total_notams`
 - `relevant_notams` (with `keywords_matched`)
 - `clearance_status` (`NO_CRITICAL_ALERTS`, `REVIEW_REQUIRED`, `MANUAL_CHECK_REQUIRED`)
@@ -172,14 +179,17 @@ Key outputs:
 File: `backend/mcp_servers/weather_server.py`
 
 Tools:
+
 - `get_surface_weather(latitude, longitude, forecast_hours=24)`
 - `get_winds_aloft(latitude, longitude, forecast_datetime)`
 
 What they do:
+
 - `get_surface_weather`: fetches hourly surface forecast data and computes GO/CAUTION/NO-GO windows
 - `get_winds_aloft`: fetches vertical wind profile at standard pressure levels and flags jet-stream risk
 
 Key outputs:
+
 - surface weather: `overall_assessment`, `go_windows`, `caution_windows`, `no_go_windows`, `hourly_conditions`
 - winds aloft: `wind_profile`, `jet_stream_alert`, `jet_stream_message`, `forecast_time`
 - both include `observation_links`
@@ -189,16 +199,19 @@ Key outputs:
 File: `backend/mcp_servers/trajectory/server.py`
 
 Tools:
+
 - `predict_standard(launch_latitude, launch_longitude, launch_datetime, ascent_rate, burst_altitude, descent_rate, launch_altitude=0.0)`
 - `health_check()`
 - `get_supported_profiles()`
 
 What they do:
+
 - `predict_standard`: runs a standard ascent-burst-descent prediction through the Tawhiri wrapper
 - `health_check`: confirms trajectory service configuration state
 - `get_supported_profiles`: lists available trajectory profiles and required fields
 
 Key outputs:
+
 - prediction response includes `ok`, `profile`, `request`, `summary`, `path`, `raw`
 - `summary` includes burst/landing points and `water_landing`
 
@@ -238,6 +251,7 @@ When adding a new MCP tool, document it with this structure:
 ```
 
 Recommended minimum documentation per tool:
+
 - parameter list (types, defaults, limits)
 - output schema and status fields
 - external dependencies (APIs, environment variables)
@@ -257,6 +271,7 @@ Concept in development.
 This project builds upon and is inspired by existing work in the high-altitude balloon and telemetry ecosystem.
 
 - Mission Support Telemetry  
-  https://github.com/INSOJO/mission-support-telemetry  
+
+  <https://github.com/INSOJO/mission-support-telemetry>  
 
 Additional credits and acknowledgments will be added as STRATOS evolves.
