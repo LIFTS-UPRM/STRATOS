@@ -56,3 +56,10 @@ build/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+.vercel/
+*.tsbuildinfo

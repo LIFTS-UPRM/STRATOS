@@ -1,0 +1,120 @@
+.container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+}
+
+/* Empty state */
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--color-text-secondary);
+}
+
+.emptyIcon {
+  font-size: 48px;
+  color: var(--color-accent);
+  opacity: 0.7;
+}
+
+.emptyTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.emptySubtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  max-width: 360px;
+}
+
+/* Message list */
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px;
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Message rows */
+.messageRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.userRow {
+  flex-direction: row-reverse;
+}
+
+.assistantRow {
+  flex-direction: row;
+}
+
+/* Avatar */
+.avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-accent);
+  user-select: none;
+}
+
+.userAvatar {
+  color: var(--color-text-secondary);
+}
+
+/* Bubbles */
+.bubble {
+  max-width: 72%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.userBubble {
+  background: var(--color-user-bubble);
+  border: 1px solid #2a3f6a;
+  border-bottom-right-radius: 4px;
+}
+
+.assistantBubble {
+  background: var(--color-assistant-bubble);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 4px;
+}
+
+.messageText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.timestamp {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-align: right;
+}
