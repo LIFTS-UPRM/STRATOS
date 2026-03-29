@@ -40,10 +40,19 @@ pnpm-debug.log*
 # Test, build, and coverage outputs
 coverage/
 htmlcov/
+.coverage
+.coverage.*
 .pyre/
 dist/
 build/
 *.log
+*.pid
+*.sqlite3
+
+# Python virtualenv/test tooling
+.tox/
+.nox/
+.hypothesis/
 
 # Jupyter
 .ipynb_checkpoints/

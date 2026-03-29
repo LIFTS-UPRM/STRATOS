@@ -20,8 +20,9 @@ It is designed to replace fragmented HAB workflows with one integrated system th
 4. [Who It’s For](#who-its-for)
 5. [Vision](#vision)
 6. [MCP Tooling Reference](#mcp-tooling-reference)
-7. [Status](#status)
-8. [Credits](#credits)
+7. [Backend API Quick Start](# Backend API Quick Start)
+8. [Status](#status)
+9. [Credits](#credits)
 
 ---
 
@@ -257,6 +258,37 @@ Recommended minimum documentation per tool:
 - external dependencies (APIs, environment variables)
 - operational interpretation (how to use result in GO/NO-GO decisions)
 - one realistic example call and response
+
+---
+
+## Backend API Quick Start
+
+The FastAPI skeleton lives in `backend/app/main.py` with an import entrypoint at `backend/main.py`.
+
+From the `backend/` directory:
+
+```bash
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --reload
+```
+
+Default local URL:
+
+- `http://127.0.0.1:8000`
+
+Available endpoints:
+
+- `GET /health`
+- `POST /chat`
+
+Example calls:
+
+```bash
+curl -s http://127.0.0.1:8000/health
+curl -s -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"hello"}'
+```
 
 ---
 
