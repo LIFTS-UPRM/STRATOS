@@ -47,7 +47,10 @@
               "name": "brandBar",
               "width": "fill_container",
               "gap": 8,
-              "padding": 12,
+              "padding": [
+                14,
+                12
+              ],
               "justifyContent": "space_between",
               "alignItems": "center",
               "children": [
@@ -57,10 +60,10 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "images/STRATOS LOGO.png",
-                    "mode": "fill"
+                    "url": "assets/STRATOS_LOGO_PNG_NO_BG/White.png",
+                    "mode": "fit"
                   },
-                  "width": 25,
+                  "width": 28,
                   "height": 28
                 },
                 {
@@ -70,16 +73,16 @@
                   "fill": "$--sidebar-foreground",
                   "content": "STRATOS",
                   "fontFamily": "Inter",
-                  "fontSize": 14,
+                  "fontSize": 15,
                   "fontWeight": "700",
-                  "letterSpacing": -1
+                  "letterSpacing": -0.5
                 },
                 {
                   "type": "icon_font",
                   "id": "cwWLC",
                   "name": "collapseIcon",
-                  "width": 16,
-                  "height": 16,
+                  "width": 18,
+                  "height": 18,
                   "iconFontName": "panel-left-close",
                   "iconFontFamily": "lucide",
                   "fill": "$--muted-foreground"
@@ -100,7 +103,7 @@
                   "id": "HuRLq",
                   "name": "newChat",
                   "width": "fill_container",
-                  "fill": "transparent",
+                  "fill": "$--sidebar-accent",
                   "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
@@ -155,7 +158,8 @@
                           "content": "New chat",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "500"
                         }
                       ]
                     },
@@ -261,7 +265,8 @@
                           "content": "Search chats",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -333,8 +338,9 @@
                   "fill": "$--muted-foreground",
                   "content": "Tools",
                   "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "500"
+                  "fontSize": 10,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.5
                 },
                 {
                   "type": "frame",
@@ -396,7 +402,8 @@
                           "content": "Flight Planning",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -502,7 +509,8 @@
                           "content": "Weather Data",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -608,7 +616,8 @@
                           "content": "Telemetry",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -681,7 +690,10 @@
                   "name": "histTitle",
                   "width": "fill_container",
                   "gap": 6,
-                  "padding": 4,
+                  "padding": [
+                    2,
+                    4
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -691,8 +703,9 @@
                       "fill": "$--muted-foreground",
                       "content": "Recents",
                       "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "500"
+                      "fontSize": 10,
+                      "fontWeight": "700",
+                      "letterSpacing": 1.5
                     }
                   ]
                 },
@@ -726,6 +739,7 @@
                   "name": "h1",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -779,11 +793,12 @@
                           "type": "text",
                           "id": "RA9Q3",
                           "name": "Label",
-                          "fill": "$--muted-foreground",
+                          "fill": "$--sidebar-foreground",
                           "content": "Pre-flight Checklist Review",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -835,6 +850,7 @@
                   "name": "h2",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -892,7 +908,8 @@
                           "content": "NOTAM Analysis Region 4",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -944,6 +961,7 @@
                   "name": "h3",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1001,7 +1019,8 @@
                           "content": "Trajectory Optimization Run",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1077,6 +1096,7 @@
                   "name": "h4",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1134,7 +1154,8 @@
                           "content": "Post-flight Data Recovery",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1186,6 +1207,7 @@
                   "name": "h5",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1243,7 +1265,8 @@
                           "content": "Wind Shear Analysis 03/24",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1295,6 +1318,7 @@
                   "name": "h6",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1352,7 +1376,8 @@
                           "content": "Comms Check Frequency 7",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1428,6 +1453,7 @@
                   "name": "h7",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1485,7 +1511,8 @@
                           "content": "Thermal Profile Sim B-12",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1537,6 +1564,7 @@
                   "name": "h8",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1594,7 +1622,8 @@
                           "content": "Landing Zone Recon Alpha",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1646,6 +1675,7 @@
                   "name": "h9",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1703,7 +1733,8 @@
                           "content": "Safety Protocol Update v3",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1755,6 +1786,7 @@
                   "name": "h10",
                   "width": "fill_container",
                   "fill": "transparent",
+                  "cornerRadius": 6,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
@@ -1812,7 +1844,8 @@
                           "content": "GPS Drift Correction Log",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1931,8 +1964,13 @@
                       "type": "frame",
                       "id": "mcZ7z",
                       "name": "chatTab",
-                      "fill": "$--secondary",
+                      "fill": "#3B82F615",
                       "cornerRadius": 6,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#3B82F640"
+                      },
                       "padding": [
                         6,
                         12
@@ -1943,11 +1981,11 @@
                           "type": "text",
                           "id": "ngo8P",
                           "name": "chatLabel",
-                          "fill": "$--foreground",
+                          "fill": "#3B82F6",
                           "content": "Chat",
                           "fontFamily": "Inter",
                           "fontSize": 14,
-                          "fontWeight": "500"
+                          "fontWeight": "600"
                         }
                       ]
                     },
@@ -2096,9 +2134,9 @@
                       "width": "fill_container",
                       "height": "fill_container",
                       "layout": "vertical",
-                      "gap": 28,
+                      "gap": 20,
                       "padding": [
-                        24,
+                        28,
                         48
                       ],
                       "children": [
@@ -2118,7 +2156,7 @@
                               "cornerRadius": 16,
                               "stroke": {
                                 "align": "inside",
-                                "thickness": 1,
+                                "thickness": 0,
                                 "fill": "$--border"
                               },
                               "effect": {
@@ -2142,18 +2180,18 @@
                                   "type": "frame",
                                   "id": "kqVcF",
                                   "name": "AI Name Row",
-                                  "gap": 6,
+                                  "gap": 8,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "text",
                                       "id": "RWn2R",
                                       "name": "aiLabel1",
-                                      "fill": "$--foreground",
+                                      "fill": "#3B82F6",
                                       "content": "STRATOS AI",
                                       "fontFamily": "IBM Plex Mono",
                                       "fontSize": 11,
-                                      "fontWeight": "700",
+                                      "fontWeight": "600",
                                       "letterSpacing": 0.6
                                     },
                                     {
@@ -2163,7 +2201,8 @@
                                       "fill": "$--muted-foreground",
                                       "content": "09:42:15 UTC",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 10
+                                      "fontSize": 10,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2177,7 +2216,8 @@
                                   "content": "Good morning, Flight Director. HAB-7 mission is currently in pre-launch configuration. All systems nominal. Awaiting your go/no-go decision for the 11:00 UTC launch window.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "Inter",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -2226,7 +2266,8 @@
                                       "fill": "$--muted-foreground",
                                       "content": "09:42:38 UTC",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2240,7 +2281,8 @@
                                   "content": "Here is the current mission briefing for HAB-7:",
                                   "lineHeight": 1.6,
                                   "fontFamily": "Inter",
-                                  "fontSize": 15
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",
@@ -2376,7 +2418,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Launch Site",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2405,7 +2448,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Predicted Landing",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2434,7 +2478,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Max Altitude",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2505,7 +2550,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Surface Wind",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2534,7 +2580,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Temperature",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2563,7 +2610,8 @@
                                                   "fill": "$--muted-foreground",
                                                   "content": "Visibility",
                                                   "fontFamily": "Inter",
-                                                  "fontSize": 11
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
                                                 },
                                                 {
                                                   "type": "text",
@@ -2654,7 +2702,8 @@
                                               "content": "TFR active R-2601 — Restricted airspace 38.9°N-40.1°N below FL180",
                                               "lineHeight": 1.5,
                                               "fontFamily": "Inter",
-                                              "fontSize": 12
+                                              "fontSize": 12,
+                                              "fontWeight": "normal"
                                             }
                                           ]
                                         },
@@ -2700,7 +2749,8 @@
                                               "content": "Runway 17L/35R closed for maintenance at KDEN until 14:00 UTC",
                                               "lineHeight": 1.5,
                                               "fontFamily": "Inter",
-                                              "fontSize": 12
+                                              "fontSize": 12,
+                                              "fontWeight": "normal"
                                             }
                                           ]
                                         }
@@ -2745,7 +2795,8 @@
                                       "fill": "$--muted-foreground",
                                       "content": "09:43:02 UTC",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "text",
@@ -2764,7 +2815,7 @@
                                   "type": "frame",
                                   "id": "8sA8m",
                                   "name": "userTextBg",
-                                  "fill": "$--secondary",
+                                  "fill": "#1a3158",
                                   "cornerRadius": 18,
                                   "layout": "vertical",
                                   "padding": [
@@ -2776,13 +2827,14 @@
                                       "type": "text",
                                       "id": "1Pnv2",
                                       "name": "userText",
-                                      "fill": "$--foreground",
+                                      "fill": "#E2F0FF",
                                       "textGrowth": "fixed-width",
                                       "width": 380,
                                       "content": "Run trajectory analysis with current wind data. What's our confidence level on the predicted landing zone?",
                                       "lineHeight": 1.6,
                                       "fontFamily": "Inter",
-                                      "fontSize": 15
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 }
@@ -2806,7 +2858,7 @@
                               "cornerRadius": 16,
                               "stroke": {
                                 "align": "inside",
-                                "thickness": 1,
+                                "thickness": 0,
                                 "fill": "$--border"
                               },
                               "layout": "vertical",
@@ -2820,14 +2872,14 @@
                                   "type": "frame",
                                   "id": "oqPUs",
                                   "name": "ai2NameRow",
-                                  "gap": 6,
+                                  "gap": 8,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "text",
                                       "id": "Vz36x",
                                       "name": "ai2Name",
-                                      "fill": "$--foreground",
+                                      "fill": "#3B82F6",
                                       "content": "STRATOS AI",
                                       "fontFamily": "IBM Plex Mono",
                                       "fontSize": 11,
@@ -2841,7 +2893,8 @@
                                       "fill": "$--muted-foreground",
                                       "content": "09:43:18 UTC",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 10
+                                      "fontSize": 10,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "frame",
@@ -2891,7 +2944,8 @@
                                   "content": "Trajectory analysis complete. Using GFS wind model data updated at 06:00 UTC. Landing zone prediction confidence: 94.2% within a 3.2 km radius ellipse. Primary recovery area is accessible via County Road 47. No terrain or water hazards in the landing zone. Recommend GO for launch window.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "Inter",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -2907,7 +2961,7 @@
                       "fill": "$--background",
                       "stroke": {
                         "align": "inside",
-                        "thickness": 0,
+                        "thickness": 1,
                         "fill": "$--border"
                       },
                       "layout": "vertical",
@@ -2924,6 +2978,7 @@
                           "id": "PadNK",
                           "name": "Input Row",
                           "width": "fill_container",
+                          "gap": 8,
                           "alignItems": "center",
                           "children": [
                             {
@@ -2973,7 +3028,7 @@
                                       "fill": "$--muted-foreground",
                                       "content": "Ask anything",
                                       "fontFamily": "Inter",
-                                      "fontSize": 15,
+                                      "fontSize": 14,
                                       "fontWeight": "normal"
                                     }
                                   ]
@@ -3016,10 +3071,7 @@
                             {
                               "type": "frame",
                               "id": "rAPH9",
-                              "x": 620,
-                              "y": 2,
                               "name": "attachBtn",
-                              "enabled": false,
                               "width": 48,
                               "height": 48,
                               "fill": "$--secondary",
@@ -3052,7 +3104,7 @@
                           "id": "OYa08",
                           "name": "Hint Row",
                           "width": "fill_container",
-                          "justifyContent": "center",
+                          "justifyContent": "space_between",
                           "alignItems": "center",
                           "children": [
                             {
@@ -3062,27 +3114,20 @@
                               "fill": "$--muted-foreground",
                               "content": "STRATOS AI can make mistakes. Check important info.",
                               "fontFamily": "Inter",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
                               "id": "kbXom",
-                              "x": 652,
-                              "y": 0,
                               "name": "hintRight",
-                              "enabled": false,
-                              "width": "fit_content(72)",
-                              "height": "fit_content(17)",
                               "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "MSaWJ",
-                                  "x": 0,
-                                  "y": 0,
                                   "name": "hintCmd",
-                                  "enabled": false,
                                   "fill": "$--secondary",
                                   "cornerRadius": 4,
                                   "stroke": {
