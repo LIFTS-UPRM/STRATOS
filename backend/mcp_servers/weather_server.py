@@ -261,7 +261,7 @@ async def get_winds_aloft(
         })
 
     jet_levels = [p["pressure_hPa"] for p in profile if (p["wind_speed_ms"] or 0) > 40]
-    jet_msg    = f"Jet stream: {', '.join(str(l)+'hPa' for l in jet_levels)}" if jet_levels else None
+    jet_msg    = f"Jet stream: {', '.join(str(lvl)+'hPa' for lvl in jet_levels)}" if jet_levels else None
 
     return {
         "location":           {"latitude": latitude, "longitude": longitude},
