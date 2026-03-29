@@ -6,6 +6,10 @@ on:
   push:
     branches-ignore: [main]
 
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend:
     runs-on: ubuntu-latest
