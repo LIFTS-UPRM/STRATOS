@@ -60,7 +60,7 @@ export default function ChatPage() {
 
   return (
     <div className={styles.appShell}>
-      <Sidebar isOpen={isSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar} />
 
       <div className={styles.mainArea}>
         <Header
@@ -69,7 +69,11 @@ export default function ChatPage() {
         />
 
         <main className={styles.chatMain}>
-          <MessageList messages={messages} />
+          <MessageList
+            messages={messages}
+            isLoading={isLoading}
+            onSuggestion={handleSend}
+          />
           <InputBar onSend={handleSend} disabled={isLoading} />
         </main>
       </div>

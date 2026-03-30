@@ -1,27 +1,54 @@
 .wrapper {
   flex-shrink: 0;
-  padding: 12px 24px 16px;
+  padding: 10px 24px 14px;
   background: var(--color-bg);
-  border-top: 1px solid var(--color-border);
 }
 
+/* ─── Container ───────────────────────────────────────────────── */
 .inputContainer {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 8px;
   max-width: 860px;
   margin: 0 auto;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 10px 12px;
-  transition: border-color 0.15s;
+  border-radius: 13px;
+  padding: 8px 8px 8px 10px;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
 }
 
 .inputContainer:focus-within {
-  border-color: var(--color-accent);
+  border-color: rgba(79, 142, 247, 0.45);
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.12);
 }
 
+/* ─── Left "+" button ─────────────────────────────────────────── */
+.leftBtn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.leftBtn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+}
+
+/* ─── Textarea ────────────────────────────────────────────────── */
 .textarea {
   flex: 1;
   background: none;
@@ -35,10 +62,11 @@
   max-height: 200px;
   overflow-y: auto;
   font-family: inherit;
+  padding: 3px 0;
 }
 
 .textarea::placeholder {
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 .textarea:disabled {
@@ -46,39 +74,107 @@
   cursor: not-allowed;
 }
 
-.sendBtn {
+/* ─── Right actions ───────────────────────────────────────────── */
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+}
+
+/* ─── Send button ─────────────────────────────────────────────── */
+.sendBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   border: none;
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 18px;
-  line-height: 1;
+  background: var(--color-surface-3);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.sendBtnActive {
+  background: var(--color-text-primary);
+  color: var(--color-bg);
+  cursor: pointer;
+}
+
+.sendBtnActive:hover {
+  background: #fff;
+  box-shadow: 0 0 14px rgba(79, 142, 247, 0.3);
+}
+
+/* ─── Paperclip button ────────────────────────────────────────── */
+.attachBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, opacity 0.15s;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
-.sendBtn:hover:not(:disabled) {
-  background: var(--color-accent-hover);
-}
-
-.sendBtn:disabled {
-  background: var(--color-surface-2);
+.attachBtn:hover {
+  background: var(--color-surface-3);
   color: var(--color-text-secondary);
-  cursor: not-allowed;
 }
 
-.hint {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--color-text-secondary);
-  text-align: center;
+/* ─── Spinner ─────────────────────────────────────────────────── */
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Hint row ────────────────────────────────────────────────── */
+.hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 7px;
   max-width: 860px;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 2px;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.commandsBtn {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.commandsBtn:hover {
+  color: var(--color-text-secondary);
+  border-color: var(--color-text-muted);
 }
