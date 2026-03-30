@@ -7,7 +7,7 @@ from datetime import datetime
 
 import httpx
 
-from .errors import TawhiriError, ValidationError
+from .errors import ValidationError
 from .models import PredictionResult, StandardProfileRequest
 from .normalizers import extract_summary, flatten_path, to_tawhiri_params
 from .tawhiri_client import call_tawhiri
