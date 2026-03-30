@@ -1,0 +1,53 @@
+# Python 3.8 base — magicmemoryview's pre-generated C compiles cleanly here.
+# ruaumoko's pre-generated dataset.c uses PyThreadState.exc_type which was removed
+# in Python 3.7. We fix it by downloading the ruaumoko source, deleting dataset.c,
+# and regenerating it with modern Cython (which emits PyErr_GetExcInfo instead).
+FROM python:3.8-slim
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    gcc \
+    g++ \
+    git \
+    libffi-dev \
+    libssl-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 https://github.com/cuspaceflight/tawhiri.git .
+
+# Install Cython first so we can regenerate ruaumoko's stale dataset.c
+RUN pip install --upgrade pip setuptools wheel "Cython>=3.0"
+
+# Patch ruaumoko: download source tarball, delete the stale pre-generated C file,
+# regenerate it with the modern Cython we just installed, then install.
+# pip install -r requirements.txt will see ruaumoko is already satisfied and skip it.
+RUN pip download "ruaumoko==0.2.0" --no-binary ":all:" -d /tmp/rua_pkg && \
+    RUAT=$(ls /tmp/rua_pkg/Ruaumoko*.tar.gz) && \
+    tar xzf "$RUAT" -C /tmp/ && \
+    RUADIR=$(ls -d /tmp/Ruaumoko*) && \
+    rm -f "$RUADIR/ruaumoko/dataset.c" && \
+    cython "$RUADIR/ruaumoko/dataset.pyx" && \
+    pip install "$RUADIR"
+
+RUN pip install -r requirements.txt && \
+    python setup.py build_ext --inplace
+
+ENV TAWHIRI_DATA_DIR=/data
+ENV FLASK_APP=tawhiri
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=8000
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+    CMD curl -sf "http://localhost:8000/api/v1/?launch_latitude=52.2&launch_longitude=0.1&launch_altitude=0&launch_datetime=2000-01-01T00%3A00%3A00Z&ascent_rate=5&burst_altitude=28000&descent_rate=5&profile=standard_profile&version=1" || exit 1
+
+CMD ["python", "-m", "flask", "run"]

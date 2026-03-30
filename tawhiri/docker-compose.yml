@@ -1,0 +1,40 @@
+services:
+  tawhiri-predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile.predictor
+    container_name: tawhiri-predictor
+    ports:
+      - "8100:8000"
+    volumes:
+      - tawhiri-data:/data
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-sf"
+        - "http://localhost:8000/api/v1/?launch_latitude=52.2&launch_longitude=0.1&launch_altitude=0&launch_datetime=2000-01-01T00%3A00%3A00Z&ascent_rate=5&burst_altitude=28000&descent_rate=5&profile=standard_profile&version=1"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    restart: unless-stopped
+
+  tawhiri-downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile.downloader
+    container_name: tawhiri-downloader
+    volumes:
+      - tawhiri-data:/data
+    env_file:
+      - .env
+    depends_on:
+      tawhiri-predictor:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  tawhiri-data:

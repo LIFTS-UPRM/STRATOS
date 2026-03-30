@@ -1,0 +1,54 @@
+# ── Build stage ─────────────────────────────────────────────────────────────
+FROM alpine:3.19 AS build
+
+RUN apk add --no-cache \
+    bash \
+    build-base \
+    cmake \
+    coreutils \
+    curl-dev \
+    gfortran \
+    git \
+    libffi-dev \
+    linux-headers \
+    m4 \
+    opam \
+    perl \
+    pkgconf \
+    unzip
+
+# Initialise opam with a pinned OCaml compiler; disable sandboxing (no bubblewrap in Docker)
+RUN opam init -y --disable-sandboxing --compiler=4.12.0
+
+# Install OCaml deps that match the tawhiri-downloader lock file.
+# --no-depexts: skip opam's external dep check — linux-headers etc. are already
+# installed via apk above, but opam's depext resolver can't detect them in Docker.
+RUN eval "$(opam env)" && \
+    opam install -y --no-depexts \
+      dune \
+      core=v0.14.1 \
+      async=v0.14.0 \
+      ctypes=0.18.0 \
+      ctypes-foreign=0.18.0 \
+      ocurl=0.9.1
+
+WORKDIR /src
+RUN git clone --depth 1 https://github.com/cuspaceflight/tawhiri-downloader.git .
+
+RUN eval "$(opam env)" && dune build --profile=release main.exe
+
+# ── Runtime stage ────────────────────────────────────────────────────────────
+FROM alpine:3.19
+
+RUN apk add --no-cache \
+    libcurl \
+    libffi \
+    tzdata
+
+WORKDIR /app
+COPY --from=build /src/_build/default/main.exe /app/tawhiri-downloader
+
+RUN mkdir -p /data
+VOLUME ["/data"]
+
+CMD ["/app/tawhiri-downloader"]
