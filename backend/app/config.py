@@ -21,7 +21,6 @@ class Settings:
     llm_model: str
     faa_client_id: str
     faa_client_secret: str
-    tawhiri_timeout: float
 
 
 @lru_cache(maxsize=1)
