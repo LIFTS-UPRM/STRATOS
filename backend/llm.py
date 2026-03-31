@@ -282,11 +282,17 @@ async def execute_tool(name: str, tool_input: dict) -> str:
 
     elif name == "check_notam_airspace":
         s = get_settings()
-        result = await check_notam_airspace(
-            **tool_input,
-            faa_client_id=s.faa_client_id,
-            faa_client_secret=s.faa_client_secret,
-        )
+        # result = await check_notam_airspace(
+        #     **tool_input,
+        #     faa_client_id=s.faa_client_id,
+        #     faa_client_secret=s.faa_client_secret,
+        # )
+        result = {
+        "clearance_status": "MANUAL_CHECK_REQUIRED",
+        "summary": "NOTAM check disabled in development. FAA credentials not configured.",
+        "notams": [],
+        "source": "mock_notam_dev"
+    }
 
     elif name == "predict_standard":
         result = await predict_standard(**tool_input)
