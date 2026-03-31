@@ -1,11 +1,11 @@
-"""LLM provider abstraction — OpenAI implementation.
+"""LLM provider abstraction, OpenAI implementation.
 
 Exports:
-  ALL_TOOLS         — merged OpenAI function-calling tool schema list
-  SYSTEM_PROMPT     — Agent system prompt
-  execute_tool(name, input) — dispatches to all MCP tool functions
-  LLMProvider       — abstract base class
-  OpenAIProvider    — OpenAI implementation
+  ALL_TOOLS, merged OpenAI function-calling tool schema list
+  SYSTEM_PROMPT, Agent system prompt
+  execute_tool(name, input), dispatches to all MCP tool functions
+  LLMProvider, abstract base class
+  OpenAIProvider, OpenAI implementation
 """
 from __future__ import annotations
 
@@ -33,9 +33,19 @@ WEATHER_TOOLS: list[dict] = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "latitude":       {"type": "number",  "description": "Launch site latitude (-90 to 90)"},
-                    "longitude":      {"type": "number",  "description": "Launch site longitude (-180 to 180)"},
-                    "forecast_hours": {"type": "integer", "description": "Hours ahead to forecast (1-72)", "default": 24},
+                    "latitude": {
+                        "type": "number",
+                        "description": "Launch site latitude (-90 to 90)",
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Launch site longitude (-180 to 180)",
+                    },
+                    "forecast_hours": {
+                        "type": "integer",
+                        "description": "Hours ahead to forecast (1-72)",
+                        "default": 24,
+                    },
                 },
                 "required": ["latitude", "longitude"],
             },
@@ -54,8 +64,14 @@ WEATHER_TOOLS: list[dict] = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "latitude":          {"type": "number", "description": "Launch site latitude"},
-                    "longitude":         {"type": "number", "description": "Launch site longitude"},
+                    "latitude": {
+                        "type": "number",
+                        "description": "Launch site latitude",
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Launch site longitude",
+                    },
                     "forecast_datetime": {
                         "type": "string",
                         "description": "ISO 8601 datetime for the forecast (e.g. '2026-03-15T12:00:00Z')",
@@ -81,10 +97,23 @@ NOTAM_TOOLS: list[dict] = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "latitude":        {"type": "number", "description": "Launch site latitude"},
-                    "longitude":       {"type": "number", "description": "Launch site longitude"},
-                    "radius_km":       {"type": "number", "description": "Search radius in km (default 25)", "default": 25},
-                    "launch_datetime": {"type": "string", "description": "ISO 8601 launch datetime"},
+                    "latitude": {
+                        "type": "number",
+                        "description": "Launch site latitude",
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Launch site longitude",
+                    },
+                    "radius_km": {
+                        "type": "number",
+                        "description": "Search radius in km (default 25)",
+                        "default": 25,
+                    },
+                    "launch_datetime": {
+                        "type": "string",
+                        "description": "ISO 8601 launch datetime",
+                    },
                 },
                 "required": ["latitude", "longitude"],
             },
@@ -220,8 +249,14 @@ ASTRA_TOOLS: list[dict] = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "launch_lat": {"type": "number", "description": "Launch site latitude in decimal degrees."},
-                    "launch_lon": {"type": "number", "description": "Launch site longitude in decimal degrees."},
+                    "launch_lat": {
+                        "type": "number",
+                        "description": "Launch site latitude in decimal degrees.",
+                    },
+                    "launch_lon": {
+                        "type": "number",
+                        "description": "Launch site longitude in decimal degrees.",
+                    },
                     "launch_elevation_m": {
                         "type": "number",
                         "description": "Launch site elevation above mean sea level in metres.",
@@ -302,6 +337,7 @@ def get_tools() -> list[dict]:
     """Return the full list of tool schemas."""
     return ALL_TOOLS
 
+
 # ── System prompt ─────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """\
@@ -324,6 +360,32 @@ Guidelines:
 - Be concise. Use short paragraphs and bullet points.
 """
 
+
+def _normalize_tool_result(
+    tool_name: str,
+    raw_result: Any,
+) -> dict | list | str | int | float | bool | None:
+    """Normalize tool output into JSON-serializable data."""
+    if isinstance(raw_result, str):
+        if raw_result.startswith("Error"):
+            return {
+                "status": "error",
+                "tool": tool_name,
+                "message": raw_result,
+            }
+
+        try:
+            return json.loads(raw_result)
+        except json.JSONDecodeError:
+            return {
+                "status": "error",
+                "tool": tool_name,
+                "message": f"Tool returned non-JSON output: {raw_result}",
+            }
+
+    return raw_result
+
+
 # ── Tool dispatcher ───────────────────────────────────────────────────────────
 
 async def execute_tool(name: str, tool_input: dict) -> str:
@@ -338,26 +400,6 @@ async def execute_tool(name: str, tool_input: dict) -> str:
     from mcp_servers.notam_server import check_notam_airspace
     from mcp_servers.weather_server import get_surface_weather, get_winds_aloft
 
-    def _normalize_tool_result(tool_name: str, raw_result: Any) -> dict | list | str | int | float | bool | None:
-        if isinstance(raw_result, str):
-            if raw_result.startswith("Error"):
-                return {
-                    "status": "error",
-                    "tool": tool_name,
-                    "message": raw_result,
-                }
-
-            try:
-                return json.loads(raw_result)
-            except json.JSONDecodeError:
-                return {
-                    "status": "error",
-                    "tool": tool_name,
-                    "message": f"Tool returned non-JSON output: {raw_result}",
-                }
-
-        return raw_result
-
     if name == "get_surface_weather":
         result = await get_surface_weather(**tool_input)
 
@@ -365,12 +407,7 @@ async def execute_tool(name: str, tool_input: dict) -> str:
         result = await get_winds_aloft(**tool_input)
 
     elif name == "check_notam_airspace":
-        s = get_settings()
-        result = await check_notam_airspace(
-            **tool_input,
-            faa_client_id=s.faa_client_id,
-            faa_client_secret=s.faa_client_secret,
-        )
+        result = await check_notam_airspace(**tool_input)
 
     elif name == "astra_list_balloons":
         result = await astra_list_balloons(**tool_input)
@@ -394,7 +431,7 @@ async def execute_tool(name: str, tool_input: dict) -> str:
             "message": f"Unknown tool: {name}",
         }
 
-    return json.dumps(_normalize_tool_result(name, result))
+    return json.dumps(_normalize_tool_result(name, result), default=str)
 
 
 # ── Provider abstraction ──────────────────────────────────────────────────────
@@ -417,7 +454,7 @@ class OpenAIProvider(LLMProvider):
     def __init__(self) -> None:
         s = get_settings()
         self._client = AsyncOpenAI(api_key=s.llm_api_key)
-        self._model  = s.llm_model
+        self._model = s.llm_model
 
     def get_client(self) -> AsyncOpenAI:
         return self._client
