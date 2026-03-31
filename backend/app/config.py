@@ -36,5 +36,4 @@ def get_settings() -> Settings:
         faa_client_id=os.getenv("FAA_CLIENT_ID", ""),
         faa_client_secret=os.getenv("FAA_CLIENT_SECRET", ""),
         
-        tawhiri_timeout=float(os.getenv("TAWHIRI_TIMEOUT", "30")),
     )
