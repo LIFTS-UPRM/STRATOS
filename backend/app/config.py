@@ -35,5 +35,4 @@ def get_settings() -> Settings:
         llm_model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         faa_client_id=os.getenv("FAA_CLIENT_ID", ""),
         faa_client_secret=os.getenv("FAA_CLIENT_SECRET", ""),
-        
     )
