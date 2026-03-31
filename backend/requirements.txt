@@ -2,3 +2,12 @@ fastapi
 uvicorn[standard]
 python-dotenv
 openai
+httpx
+pydantic
+fastmcp
+mcp
+numpy
+scipy
+six
+requests
+grequests

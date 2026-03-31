@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from functools import lru_cache
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -21,10 +22,14 @@ class Settings:
     llm_model: str
     faa_client_id: str
     faa_client_secret: str
+    astra_gfs_cache_dir: str
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    default_astra_cache_dir = (
+        Path(__file__).resolve().parents[1] / ".cache" / "astra" / "gfs"
+    )
     return Settings(
         app_name=os.getenv("APP_NAME", "STRATOS Backend"),
         app_env=os.getenv("APP_ENV", "development"),
@@ -35,4 +40,8 @@ def get_settings() -> Settings:
         llm_model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         faa_client_id=os.getenv("FAA_CLIENT_ID", ""),
         faa_client_secret=os.getenv("FAA_CLIENT_SECRET", ""),
+        astra_gfs_cache_dir=os.getenv(
+            "ASTRA_GFS_CACHE_DIR",
+            str(default_astra_cache_dir),
+        ),
     )

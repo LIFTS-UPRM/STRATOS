@@ -48,6 +48,7 @@ build/
 *.log
 *.pid
 *.sqlite3
+backend/.cache/
 
 # Python virtualenv/test tooling
 .tox/

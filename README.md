@@ -47,7 +47,7 @@ STRATOS brings these functions together into a single mission platform.
 
 The **Chat** module is the intelligence layer of STRATOS.
 
-It allows users to interact with mission tools and documents through natural language. The assistant can talk to external tools such as trajectory services like **Tawhiri**, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
+It allows users to interact with mission tools and documents through natural language. The assistant can talk to external tools such as the vendored **ASTRA** balloon flight simulator, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
 
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
@@ -196,26 +196,28 @@ Key outputs:
 - winds aloft: `wind_profile`, `jet_stream_alert`, `jet_stream_message`, `forecast_time`
 - both include `observation_links`
 
-#### 3) Trajectory Server (`trajectory`)
+#### 3) ASTRA Server (`astra_mcp`)
 
-File: `backend/mcp_servers/trajectory/server.py`
+File: `backend/mcp_servers/astra_server.py`
 
 Tools:
 
-- `predict_standard(launch_latitude, launch_longitude, launch_datetime, ascent_rate, burst_altitude, descent_rate, launch_altitude=0.0)`
-- `health_check()`
-- `get_supported_profiles()`
+- `astra_list_balloons(response_format="json")`
+- `astra_list_parachutes(response_format="json")`
+- `astra_calculate_nozzle_lift(balloon_model, gas_type, payload_weight_kg, ascent_rate_ms=5.0)`
+- `astra_calculate_balloon_volume(balloon_model, gas_type, nozzle_lift_kg, payload_weight_kg)`
+- `astra_run_simulation(launch_lat, launch_lon, launch_elevation_m, launch_datetime, balloon_model, gas_type, nozzle_lift_kg, payload_weight_kg, ...)`
 
 What they do:
 
-- `predict_standard`: runs a standard ascent-burst-descent prediction through the Tawhiri wrapper
-- `health_check`: confirms trajectory service configuration state
-- `get_supported_profiles`: lists available trajectory profiles and required fields
+- list supported ASTRA balloon and parachute hardware
+- calculate nozzle lift and fill volume for pre-flight setup
+- run Monte Carlo balloon trajectory simulations with NOAA GFS forecasts
 
 Key outputs:
 
-- prediction response includes `ok`, `profile`, `request`, `summary`, `path`, `raw`
-- `summary` includes burst/landing points and `water_landing`
+- hardware tools return structured ASTRA model catalogs and calculation results
+- simulation output includes `status`, `forecast`, `runs`, `aggregate`, and `trajectory_run1`
 
 ### Running MCP Servers Locally
 
@@ -224,7 +226,7 @@ From the `backend/` directory:
 ```bash
 python -m mcp_servers.notam_server
 python -m mcp_servers.weather_server
-python -m mcp_servers.trajectory.server
+python -m mcp_servers.astra_server
 ```
 
 ### README Template for New MCP Tools

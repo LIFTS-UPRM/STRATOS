@@ -92,32 +92,119 @@ NOTAM_TOOLS: list[dict] = [
     },
 ]
 
-TRAJECTORY_TOOLS: list[dict] = [
+ASTRA_TOOLS: list[dict] = [
     {
         "type": "function",
         "function": {
-            "name": "predict_standard",
+            "name": "astra_list_balloons",
             "description": (
-                "Predict a high-altitude balloon trajectory using Tawhiri (NOAA GFS winds). "
-                "Returns full flight path, burst/landing coordinates, water landing flag, "
-                "and direct SharePoint-sourced file links when relevant. "
-                "Call this to show where the balloon will land. "
-                "Wind data is fetched automatically — do not call get_winds_aloft first."
+                "List the balloon models supported by the vendored ASTRA simulator. "
+                "Use this before selecting a balloon for ASTRA calculations or simulations."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "launch_latitude":  {"type": "number", "description": "Launch latitude (-90 to 90)"},
-                    "launch_longitude": {"type": "number", "description": "Launch longitude (-180 to 180)"},
-                    "launch_datetime":  {"type": "string", "description": "ISO 8601 / RFC3339 launch datetime (e.g. '2026-03-19T12:00:00Z')"},
-                    "ascent_rate":      {"type": "number", "description": "Ascent rate in m/s (typical: 4–6)"},
-                    "burst_altitude":   {"type": "number", "description": "Burst altitude in metres (typical: 25000–35000)"},
-                    "descent_rate":     {"type": "number", "description": "Descent rate in m/s (typical: 6–9)"},
-                    "launch_altitude":  {"type": "number", "description": "Launch site altitude in metres ASL (default 0)", "default": 0.0},
+                    "response_format": {
+                        "type": "string",
+                        "enum": ["json", "markdown"],
+                        "description": "Preferred output format. Use json for structured consumption.",
+                        "default": "json",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "astra_list_parachutes",
+            "description": (
+                "List the parachute models supported by the vendored ASTRA simulator. "
+                "Use this before choosing descent hardware for a simulation."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "response_format": {
+                        "type": "string",
+                        "enum": ["json", "markdown"],
+                        "description": "Preferred output format. Use json for structured consumption.",
+                        "default": "json",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "astra_calculate_nozzle_lift",
+            "description": (
+                "Calculate the nozzle lift needed to reach a target ascent rate for a "
+                "specific ASTRA balloon model, payload weight, and gas type."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "balloon_model": {
+                        "type": "string",
+                        "description": "ASTRA balloon model ID, such as TA800 or HW1000.",
+                    },
+                    "gas_type": {
+                        "type": "string",
+                        "enum": ["Helium", "Hydrogen"],
+                        "description": "Lifting gas type.",
+                    },
+                    "payload_weight_kg": {
+                        "type": "number",
+                        "description": "Total payload train weight in kilograms.",
+                    },
+                    "ascent_rate_ms": {
+                        "type": "number",
+                        "description": "Target ascent rate in metres per second.",
+                        "default": 5.0,
+                    },
+                },
+                "required": ["balloon_model", "gas_type", "payload_weight_kg"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "astra_calculate_balloon_volume",
+            "description": (
+                "Calculate gas mass, fill volume, balloon diameter, and free lift for a "
+                "specific ASTRA balloon model and nozzle lift."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "balloon_model": {
+                        "type": "string",
+                        "description": "ASTRA balloon model ID, such as TA800 or HW1000.",
+                    },
+                    "gas_type": {
+                        "type": "string",
+                        "enum": ["Helium", "Hydrogen"],
+                        "description": "Lifting gas type.",
+                    },
+                    "nozzle_lift_kg": {
+                        "type": "number",
+                        "description": "Target nozzle lift in kilograms.",
+                    },
+                    "payload_weight_kg": {
+                        "type": "number",
+                        "description": "Total payload train weight in kilograms.",
+                    },
                 },
                 "required": [
-                    "launch_latitude", "launch_longitude", "launch_datetime",
-                    "ascent_rate", "burst_altitude", "descent_rate",
+                    "balloon_model",
+                    "gas_type",
+                    "nozzle_lift_kg",
+                    "payload_weight_kg",
                 ],
             },
         },
@@ -125,120 +212,90 @@ TRAJECTORY_TOOLS: list[dict] = [
     {
         "type": "function",
         "function": {
-            "name": "health_check",
-            "description": "Check that the trajectory service is configured and reachable.",
-            "parameters": {"type": "object", "properties": {}, "required": []},
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_supported_profiles",
-            "description": "List supported trajectory profiles and their required input fields.",
-            "parameters": {"type": "object", "properties": {}, "required": []},
-        },
-    },
-]
-
-HELIUM_TOOLS: list[dict] = [
-    {
-        "type": "function",
-        "function": {
-            "name": "calculate_helium",
-            "description": "Calculate helium fill parameters (neck lift, volume, burst altitude, flight time) for a balloon+payload combination. Returns GO/MARGINAL/NO-GO recommendation.",
+            "name": "astra_run_simulation",
+            "description": (
+                "Run an ASTRA Monte Carlo balloon flight simulation using NOAA GFS forecast data. "
+                "Use this for landing prediction and uncertainty analysis."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
+                    "launch_lat": {"type": "number", "description": "Launch site latitude in decimal degrees."},
+                    "launch_lon": {"type": "number", "description": "Launch site longitude in decimal degrees."},
+                    "launch_elevation_m": {
+                        "type": "number",
+                        "description": "Launch site elevation above mean sea level in metres.",
+                    },
+                    "launch_datetime": {
+                        "type": "string",
+                        "description": "Launch time in ISO 8601 format.",
+                    },
                     "balloon_model": {
                         "type": "string",
-                        "description": "Balloon model ID (e.g. TX1000, H1200, KCI-1000). Call list_balloon_models for options."
+                        "description": "ASTRA balloon model ID.",
                     },
-                    "payload_mass_g": {
-                        "type": "number",
-                        "description": "Total payload mass in grams including tracker, camera, and box."
-                    },
-                    "target_ascent_rate_ms": {
-                        "type": "number",
-                        "description": "Target ascent rate in m/s. Default 5.0."
-                    },
-                    "surface_temp_c": {
-                        "type": "number",
-                        "description": "Surface temperature at launch site in Celsius. Default 15."
-                    }
-                },
-                "required": ["balloon_model", "payload_mass_g"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "compare_balloons",
-            "description": "Compare multiple balloon models and rank by altitude/helium efficiency. Use when user wants to choose between balloon options.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "models": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "List of balloon model IDs to compare."
-                    },
-                    "payload_mass_g": {
-                        "type": "number",
-                        "description": "Total payload mass in grams."
-                    },
-                    "target_ascent_rate_ms": {"type": "number", "description": "Target ascent rate in m/s. Default 5.0."},
-                    "surface_temp_c": {"type": "number", "description": "Surface temp in Celsius. Default 15."}
-                },
-                "required": ["models", "payload_mass_g"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "query_documents",
-            "description": "Semantically search the user's uploaded documents for information relevant to the query. Returns ranked text chunks with source attribution.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {
+                    "gas_type": {
                         "type": "string",
-                        "description": "Natural language search query."
+                        "enum": ["Helium", "Hydrogen"],
+                        "description": "Lifting gas type.",
                     },
-                    "folder_path": {
+                    "nozzle_lift_kg": {
+                        "type": "number",
+                        "description": "Nozzle lift in kilograms.",
+                    },
+                    "payload_weight_kg": {
+                        "type": "number",
+                        "description": "Total payload train weight in kilograms.",
+                    },
+                    "parachute_model": {
                         "type": "string",
-                        "description": "Optional folder path to scope the search (e.g. 'missions/2026'). Omit to search all documents."
+                        "description": "Optional ASTRA parachute model.",
                     },
-                    "n_results": {
+                    "num_runs": {
                         "type": "integer",
-                        "description": "Maximum number of chunks to return (default 5, max 10)."
-                    }
+                        "description": "Number of Monte Carlo runs to execute.",
+                        "default": 5,
+                    },
+                    "floating_flight": {
+                        "type": "boolean",
+                        "description": "Set true for floating balloon flights.",
+                        "default": False,
+                    },
+                    "floating_altitude_m": {
+                        "type": "number",
+                        "description": "Target float altitude in metres when floating_flight=true.",
+                    },
+                    "cutdown": {
+                        "type": "boolean",
+                        "description": "Set true for cutdown-enabled flights.",
+                        "default": False,
+                    },
+                    "cutdown_altitude_m": {
+                        "type": "number",
+                        "description": "Trigger altitude in metres when cutdown=true.",
+                    },
+                    "force_low_res": {
+                        "type": "boolean",
+                        "description": "Use lower-resolution GFS data for faster simulations.",
+                        "default": False,
+                    },
                 },
-                "required": ["query"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "list_balloon_models",
-            "description": "List all available balloon models with their specs. Call this before calculate_helium or compare_balloons to see valid model IDs.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "manufacturer": {
-                        "type": "string",
-                        "description": "Optional filter by manufacturer name (e.g. 'Totex', 'Hwoyee', 'Kaymont')."
-                    }
-                },
-                "required": []
-            }
-        }
+                "required": [
+                    "launch_lat",
+                    "launch_lon",
+                    "launch_elevation_m",
+                    "launch_datetime",
+                    "balloon_model",
+                    "gas_type",
+                    "nozzle_lift_kg",
+                    "payload_weight_kg",
+                ],
+            },
+        },
     },
 ]
 
-ALL_TOOLS = WEATHER_TOOLS + NOTAM_TOOLS + TRAJECTORY_TOOLS + HELIUM_TOOLS
+ALL_TOOLS = WEATHER_TOOLS + NOTAM_TOOLS + ASTRA_TOOLS
 
 
 def get_tools() -> list[dict]:
@@ -255,14 +312,15 @@ and return a clear, structured mission brief.
 
 Guidelines:
 - Always call get_surface_weather before recommending a launch window.
-- Call get_winds_aloft when the user needs upper-level wind patterns or trajectory context.
+- Call get_winds_aloft when the user needs upper-level wind patterns outside of an ASTRA simulation.
 - Call check_notam_airspace when the user asks about airspace clearance or launch safety.
-- Call predict_standard to compute the predicted balloon trajectory. \
-  Wind data is fetched automatically from NOAA GFS — do not call get_winds_aloft before predict_standard.
+- Call astra_list_balloons and astra_list_parachutes when hardware selection is unclear.
+- Call astra_calculate_nozzle_lift before astra_run_simulation when the user gives a target ascent rate but not a nozzle lift.
+- Call astra_run_simulation to compute landing prediction and uncertainty; it pulls NOAA GFS data itself, so do not call get_winds_aloft first unless the user separately wants the wind profile.
 - Lead with the overall GO / CAUTION / NO-GO recommendation.
-- Explicitly name threshold violations (e.g., "Surface wind 8.2 m/s — CAUTION threshold: 7.0 m/s").
+- Explicitly name threshold violations (e.g., "Surface wind 8.2 m/s exceeds the 7.0 m/s CAUTION threshold").
 - Report NOTAM clearance_status clearly; MANUAL_CHECK_REQUIRED always requires human review.
-- Include observation_links and sondehub_links from tool results at the end of your response.
+- Include observation_links when available from tool results.
 - Be concise. Use short paragraphs and bullet points.
 """
 
@@ -270,8 +328,35 @@ Guidelines:
 
 async def execute_tool(name: str, tool_input: dict) -> str:
     """Execute any named tool and return a JSON string result."""
-    from mcp_servers.weather_server    import get_surface_weather, get_winds_aloft
-    from mcp_servers.trajectory.server import predict_standard, health_check, get_supported_profiles
+    from mcp_servers.astra_server import (
+        astra_calculate_balloon_volume,
+        astra_calculate_nozzle_lift,
+        astra_list_balloons,
+        astra_list_parachutes,
+        astra_run_simulation,
+    )
+    from mcp_servers.notam_server import check_notam_airspace
+    from mcp_servers.weather_server import get_surface_weather, get_winds_aloft
+
+    def _normalize_tool_result(tool_name: str, raw_result: Any) -> dict | list | str | int | float | bool | None:
+        if isinstance(raw_result, str):
+            if raw_result.startswith("Error"):
+                return {
+                    "status": "error",
+                    "tool": tool_name,
+                    "message": raw_result,
+                }
+
+            try:
+                return json.loads(raw_result)
+            except json.JSONDecodeError:
+                return {
+                    "status": "error",
+                    "tool": tool_name,
+                    "message": f"Tool returned non-JSON output: {raw_result}",
+                }
+
+        return raw_result
 
     if name == "get_surface_weather":
         result = await get_surface_weather(**tool_input)
@@ -287,19 +372,29 @@ async def execute_tool(name: str, tool_input: dict) -> str:
         "source": "mock_notam_dev"
     }
 
-    elif name == "predict_standard":
-        result = await predict_standard(**tool_input)
+    elif name == "astra_list_balloons":
+        result = await astra_list_balloons(**tool_input)
 
-    elif name == "health_check":
-        result = await health_check()
+    elif name == "astra_list_parachutes":
+        result = await astra_list_parachutes(**tool_input)
 
-    elif name == "get_supported_profiles":
-        result = await get_supported_profiles()
+    elif name == "astra_calculate_nozzle_lift":
+        result = await astra_calculate_nozzle_lift(**tool_input)
+
+    elif name == "astra_calculate_balloon_volume":
+        result = await astra_calculate_balloon_volume(**tool_input)
+
+    elif name == "astra_run_simulation":
+        result = await astra_run_simulation(**tool_input)
 
     else:
-        result = {"error": f"Unknown tool: {name}"}
+        result = {
+            "status": "error",
+            "tool": name,
+            "message": f"Unknown tool: {name}",
+        }
 
-    return json.dumps(result)
+    return json.dumps(_normalize_tool_result(name, result))
 
 
 # ── Provider abstraction ──────────────────────────────────────────────────────
