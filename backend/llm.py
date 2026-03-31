@@ -281,7 +281,6 @@ async def execute_tool(name: str, tool_input: dict) -> str:
         result = await get_winds_aloft(**tool_input)
 
     elif name == "check_notam_airspace":
-        #     **tool_input,
         #     faa_client_id=s.faa_client_id,
         #     faa_client_secret=s.faa_client_secret,
         # )
