@@ -577,8 +577,8 @@ async def _fetch_open_meteo_weather_profile(
     for lv in _OM_LEVELS:
         hourly_vars += [
             f"temperature_{lv}hPa",
-            f"windspeed_{lv}hPa",
-            f"winddirection_{lv}hPa",
+            f"wind_speed_{lv}hPa",
+            f"wind_direction_{lv}hPa",
             f"geopotential_height_{lv}hPa",
         ]
 
@@ -648,14 +648,14 @@ def _prime_environment_from_open_meteo(environment, profile: dict) -> dict:
 
         for key, arr in [
             (f"temperature_{lv}hPa", temp_2d),
-            (f"windspeed_{lv}hPa",   wspd_2d),
+            (f"wind_speed_{lv}hPa",  wspd_2d),
         ]:
             vals = hourly.get(key) or []
             for ti in range(n_t):
                 v = vals[ti] if ti < len(vals) and vals[ti] is not None else None
                 arr[li, ti] = float(v) if v is not None else (arr[li, ti - 1] if ti > 0 else 0.0)
 
-        dir_vals = hourly.get(f"winddirection_{lv}hPa") or []
+        dir_vals = hourly.get(f"wind_direction_{lv}hPa") or []
         for ti in range(n_t):
             dv = dir_vals[ti] if ti < len(dir_vals) and dir_vals[ti] is not None else None
             if dv is not None:
@@ -730,7 +730,7 @@ def _prime_environment_from_open_meteo(environment, profile: dict) -> dict:
     environment._weatherLoaded = True
 
     return {
-        "source": "open-meteo-fallback",
+        "source": "open-meteo",
         "levels_hpa": _OM_LEVELS,
         "alt_range_m": [float(alts[0]), float(alts[-1])],
         "time_range_utc": [times_dt[0].isoformat(), times_dt[-1].isoformat()],

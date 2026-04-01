@@ -70,8 +70,6 @@ def get_urldict_async(urls_dict, hooks_dict=None):
     if any(response is None for response in responses):
         raise RuntimeError("NOAA async request failed before a response was returned.")
     results = {urllib.parse.unquote(r.url): r.text for r in responses}
-    if any("OpenDAP format has been retired" in result for result in results.values()):
-        raise RuntimeError(_OPENDAP_RETIRED_MESSAGE)
     if any(result[0] == "<" for result in results.values()):
         logger.debug("GFS cycle not found.")
         return
@@ -153,10 +151,12 @@ class GFS_Handler(object):
     >>> getTemp(51.2,0.46,32000,myGFSlink.getGFStime(
     >>>    datetime.now()+datetime.timedelta(days=1,seconds=3600)))
     """
-    weatherParameters = {'tmpprs': 'Temperature',
-                          'hgtprs': 'Altitude',
-                          'ugrdprs': 'U Winds',
-                          'vgrdprs': 'V Winds'}
+    weatherParameters = {
+        'Temperature_isobaric': 'Temperature',
+        'Geopotential_height_isobaric': 'Altitude',
+        'u-component_of_wind_isobaric': 'U Winds',
+        'v-component_of_wind_isobaric': 'V Winds',
+    }
 
     def __init__(self, lat, lon, date_time, HD=True, forecastDuration=4,
         use_async=True, requestSimultaneous=True, debugging=False,
@@ -236,10 +236,9 @@ class GFS_Handler(object):
         lonGridStep = (int(self.lonGridSize) / 2) / self.lonStep
 
         # ALTITUDE (Download ALL altitude levels available)
-        self.requestAltitude = {
-            True: [0, 25],
-            False: [0, 46]
-        }[self.HD];
+        # Unidata THREDDS has 41 pressure levels (indices 0-40) for both resolutions,
+        # ordered top-of-atmosphere (low pressure) to surface (high pressure).
+        self.requestAltitude = [0, 40]
 
         # LATITUDE
         targetLatitude = (round(self.lat) + 90) / self.latStep
@@ -313,9 +312,10 @@ class GFS_Handler(object):
                 }[self.HD]
 
         # The base URL depends on whether the HD service has been requested.
+        # Unidata THREDDS OPeNDAP replaces the retired NOMADS OPeNDAP endpoint.
         self.baseURL = {
-            True: 'https://nomads.ncep.noaa.gov/dods/gfs_0p25/',
-            False: 'https://nomads.ncep.noaa.gov/dods/gfs_0p50/'
+            True: 'https://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Global_0p25deg/',
+            False: 'https://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Global_0p5deg/',
         }[self.HD]
 
         if debugging:
@@ -331,37 +331,29 @@ class GFS_Handler(object):
         Parameters
         ----------
         requestVar : string
-            noaa identifier of the variable name:
-            'tmpprs': Temperature,
-            'hgtprs': 'Altitude',
-            'ugrdprs': 'U Winds',
-            'vgrdprs': 'V Winds'
+            Unidata/THREDDS variable name:
+            'Temperature_isobaric', 'Geopotential_height_isobaric',
+            'u-component_of_wind_isobaric', 'v-component_of_wind_isobaric'
         requestLongitude : list of int, length 2
-            The [start, end] window of longitude for which to get data
-            (GFS units)
+            The [start, end] window of longitude indices for which to get data
         cycle : :obj:`datetime.datetime`
-            The cycle datetime for which to obtain the forecast
-        requestTime : :obj:`datetime.datetime`
-            The launch datetime for which to obtain the forecast
+            Unused — Unidata "Best" dataset selects the most recent cycle.
+        requestTime : list of int, length 2
+            The [start, end] time indices for the forecast window.
 
         returns
         -------
         requestURL : string
-            The noaa API request url
+            The Unidata THREDDS OPeNDAP ASCII request URL
         """
-        requestURL = '%sgfs%d%02d%02d/gfs_%s_%02dz.ascii?%s[%d:%d][%d:%d][%d:%d][%d:%d]' % (
-                self.baseURL,
-                cycle.year,
-                cycle.month,
-                cycle.day,
-                {True: '0p25', False: '0p50'}[self.HD],
-                cycle.hour,
-                requestVar,
-                requestTime[0], requestTime[1],
-                self.requestAltitude[0], self.requestAltitude[1],
-                self.requestLatitude[0], self.requestLatitude[1],
-                requestLongitude[0], requestLongitude[1]
-            )
+        requestURL = '%sBest.ascii?%s[%d:%d][%d:%d][%d:%d][%d:%d]' % (
+            self.baseURL,
+            requestVar,
+            requestTime[0], requestTime[1],
+            self.requestAltitude[0], self.requestAltitude[1],
+            self.requestLatitude[0], self.requestLatitude[1],
+            requestLongitude[0], requestLongitude[1],
+        )
         return requestURL
 
     def _NOAA_request(self, requestVar, cycle, requestTime):
@@ -397,9 +389,7 @@ class GFS_Handler(object):
             try:
                 HTTPresponse = urlopen(requestURL)
                 response = HTTPresponse.read().decode('utf-8')
-            except HTTPError as exc:
-                if exc.code == 301:
-                    raise RuntimeError(_OPENDAP_RETIRED_MESSAGE) from exc
+            except HTTPError:
                 logger.exception(
                     'Error while connecting to the GFS server.')
                 return
@@ -407,8 +397,6 @@ class GFS_Handler(object):
                 logger.exception(
                     'Error while connecting to the GFS server.')
                 return
-            if "OpenDAP format has been retired" in response:
-                raise RuntimeError(_OPENDAP_RETIRED_MESSAGE)
             if response[0] == "<":
                 logger.debug("GFS cycle not found.")
                 return
@@ -652,87 +640,41 @@ class GFS_Handler(object):
         return data_matrices, data_maps
 
     def getNOAAData(self, simulationDateTime, latestCycleDateTime, progressHandler):
-        """Makes multiple attempts to find an available data set (cycle) from
-        the noaa web service, before downloading all results with
-        getNOAAMatricesMapsCycle.
+        """Download GFS data from Unidata THREDDS via the 'Best' time-series dataset.
+
+        The 'Best' dataset always serves the most recent available GFS cycle,
+        so no multi-cycle retry loop is needed.
 
         Parameters
         ----------
         simulationDateTime : :obj:`datetime.datetime`
-        latestCycleDateTime : :obj:`datetime.datetime
-            The (assumed) earliest available weather forecast date and time.
-            Requests will begin searching for valid datasets in reversing
-            6 hour intervals from this date time.
-        progressHandler : function 
+        latestCycleDateTime : :obj:`datetime.datetime`
+            Used to compute the forecast-hour window relative to the latest cycle.
+        progressHandler : function
             See simulator.updateProgress
 
         Returns
         -------
         data_matrices : dict
-            ('noaa_name' : data_matrix) pairs, where response is the returned
-            data string. Keys:
-            'tmpprs': Temperature,
-            'hgtprs': 'Altitude',
-            'ugrdprs': 'U Winds',
-            'vgrdprs': 'V Winds'
+            Variable-name → numpy array pairs for Temperature, Altitude, U/V winds.
         data_maps : dict
-            keys as in data_matrices, but values instead contain the data_maps
+            Variable-name → GFS_Map pairs.
         """
-        #######################################################################
-        # TRY TO DOWNLOAD DATA WITH THE LATEST CYCLE. IF NOT AVAILABLE, TRY
-        # WITH AN EARLIER ONE
+        self.cycleDateTime = latestCycleDateTime
 
-        # pastCycle is a variable that indicates how many cycles in the past
-        # we're downloading data from. It first tries with 0, indicating the
-        # most recent cycle: this is calculated, knowing that cycles are issued
-        # every six hours. Sometimes, however, it takes a few hours for data to
-        # become available, or a cycle is skipped. This means that data for the
-        # latest cycle is not guaranteed to be available. If data is not
-        # available, it tries with 1 cycle older, until one is found with data
-        # available. If no cycles are found, the method raises a runtime error.
+        # Compute the time-index window for the requested simulation time.
+        timeFromForecast = simulationDateTime - latestCycleDateTime
+        hoursFromForecast = timeFromForecast.total_seconds() / 3600.
+        requestTime = floor(hoursFromForecast / 3.)
+        self.firstAvailableTime = self.cycleDateTime + timedelta(hours=requestTime * 3)
+        requestTime = [requestTime, requestTime + ceil(self.forecastDuration / 3.) + 1]
 
-        for pastCycle in range(25):
-            logger.debug('Attempting to download cycle data.')
-            thisCycle = latestCycleDateTime - timedelta(hours=pastCycle * 6)
-            self.cycleDateTime = thisCycle
-
-            # Initialize time parameter
-            timeFromForecast = simulationDateTime - thisCycle
-            hoursFromForecast = timeFromForecast.total_seconds() / 3600.
-
-            # GFS time index for the first dataset to be requested
-            # (1 GFS index = three hours)
-            requestTime = floor(hoursFromForecast / 3.)
-
-            # This stores the actual time of the first dataset downloaded. It's
-            # going to be used to convert real time to GFS "time coordinates"
-            # (see getGFStime(time) function)
-            self.firstAvailableTime = self.cycleDateTime + timedelta(hours=requestTime * 3)
-
-            # Always download an extra time dataset
-            # PChambers note: probably +1 because of the index slicing system
-            # used on the GFS servers, i.e., times 0:5 will get times
-            # 0, 1, 2, 3 and 4
-            requestTime = [requestTime, requestTime + ceil(
-                self.forecastDuration / 3.) + 1]
-            thisCycle = latestCycleDateTime - timedelta(hours=pastCycle * 6)
-            self.cycleDateTime = thisCycle
-
-            # Probe the system to see if data is available for this cycle:
-            dataResults = self._NOAA_request('tmpprs', thisCycle,
-                [requestTime[0], requestTime[0] + 1])
-
-            if (dataResults):
-                break
-            else:
-                logger.debug("Moving to next cycle")
-
-        # Main download
+        logger.debug('Downloading GFS data from Unidata THREDDS (Best dataset).')
         data_matrices, data_maps = self.getNOAAMatricesMapsCycle(
-            thisCycle, requestTime, progressHandler)
+            latestCycleDateTime, requestTime, progressHandler)
 
         if not (data_matrices and data_maps):
-            raise RuntimeError('No available GFS cycles found!')
+            raise RuntimeError('GFS download from Unidata THREDDS failed.')
         return data_matrices, data_maps
 
     @profile
@@ -795,27 +737,27 @@ class GFS_Handler(object):
         # PROCESS DATA AND PERFORM CONVERSIONS AS REQUIRED
 
         # Convert temperatures from Kelvin to Celsius
-        data_matrices['tmpprs'] -= 273.15
+        data_matrices['Temperature_isobaric'] -= 273.15
 
         # Convert geopotential height to geometric altitude
-        altitudeMatrix = (data_matrices['hgtprs'] * earthRadius /
-                          (earthRadius - data_matrices['hgtprs']))
+        altitudeMatrix = (data_matrices['Geopotential_height_isobaric'] * earthRadius /
+                          (earthRadius - data_matrices['Geopotential_height_isobaric']))
 
         # Convert u and v winds to wind direction and wind speed matrices
 
         # Convert to KNOTS and the turn into direction and speed
         self.windDirData, self.windSpeedData = tools.uv2dirspeed(
-            data_matrices['ugrdprs'],
-            data_matrices['vgrdprs'])
+            data_matrices['u-component_of_wind_isobaric'],
+            data_matrices['v-component_of_wind_isobaric'])
 
         # Store results
-        self.temperatureData = data_matrices['tmpprs']
-        self.altitudeData = data_matrices['hgtprs']
+        self.temperatureData = data_matrices['Temperature_isobaric']
+        self.altitudeData = data_matrices['Geopotential_height_isobaric']
         self.windSpeedData *= 1.9438445    # Convert to knots
 
-        self.temperatureMap = data_maps['tmpprs']
-        self.altitudeMap = data_maps['hgtprs']
-        self.windsMap = data_maps['ugrdprs']
+        self.temperatureMap = data_maps['Temperature_isobaric']
+        self.altitudeMap = data_maps['Geopotential_height_isobaric']
+        self.windsMap = data_maps['u-component_of_wind_isobaric']
 
         # DOWNLOAD HIGH ALTITUDE 0.5 x 0.5 DATA
         if (self.HD):
@@ -888,27 +830,27 @@ class GFS_Handler(object):
         # PROCESS DATA AND PERFORM CONVERSIONS AS REQUIRED
 
                 # Convert temperatures from Kelvin to Celsius
-        data_matrices['tmpprs'] -= 273.15
+        data_matrices['Temperature_isobaric'] -= 273.15
 
         # Convert geopotential height to geometric altitude
-        altitudeMatrix = (data_matrices['hgtprs'] * earthRadius /
-                          (earthRadius - data_matrices['hgtprs']))
+        altitudeMatrix = (data_matrices['Geopotential_height_isobaric'] * earthRadius /
+                          (earthRadius - data_matrices['Geopotential_height_isobaric']))
 
         # Convert u and v winds to wind direction and wind speed matrices
 
         # Convert to KNOTS and the turn into direction and speed
         module.windDirData, module.windSpeedData = tools.uv2dirspeed(
-            data_matrices['ugrdprs'],
-            data_matrices['vgrdprs'])
+            data_matrices['u-component_of_wind_isobaric'],
+            data_matrices['v-component_of_wind_isobaric'])
 
         # Store results
-        module.temperatureData = data_matrices['tmpprs']
-        module.altitudeData = data_matrices['hgtprs']
+        module.temperatureData = data_matrices['Temperature_isobaric']
+        module.altitudeData = data_matrices['Geopotential_height_isobaric']
         module.windSpeedData *= 1.9438445    # Convert to knots
 
-        module.temperatureMap = data_maps['tmpprs']
-        module.altitudeMap = data_maps['hgtprs']
-        module.windsMap = data_maps['ugrdprs']
+        module.temperatureMap = data_maps['Temperature_isobaric']
+        module.altitudeMap = data_maps['Geopotential_height_isobaric']
+        module.windsMap = data_maps['u-component_of_wind_isobaric']
 
         return module
 
@@ -1027,70 +969,118 @@ class GFS_Handler(object):
         overallMaps = []
 
         # Run this either once or twice, according to how many datasets have
-        # been downloaded (Greenwich meridian crossing.
+        # been downloaded (Greenwich meridian crossing).
         for dataStream in dataStreams:
             dataLines = dataStream.split('\n')
 
-            # Count how many latitude, longitude, pressure and time points are
-            # available in the datastream. This is used to initialize the
-            # results matrix.
-            timePoints = int(dataLines[0].split()[1].split('][')[0][1:])
-            pressurePoints = int(dataLines[0].split()[1].split('][')[1])
-            latitudePoints = int(dataLines[0].split()[1].split('][')[2])
-            longitudePoints = int(dataLines[0].split()[1].split('][')[3][:-1])
+            # --- Unidata THREDDS OPeNDAP ASCII format ---
+            # The response begins with a "Dataset { ... }" header block followed
+            # by a "---...---" separator, then the actual data section.
+            # Find the data-shape line: the first line that starts with the
+            # variable name immediately followed by '[' (no space).
+            data_start = None
+            shape_line = None
+            for i, line in enumerate(dataLines):
+                stripped = line.strip()
+                if (stripped
+                        and '[' in stripped
+                        and stripped[0] not in ('{', '}', '-', '/', ' ')
+                        and not stripped.startswith('Dataset')
+                        and not stripped.startswith('Float')
+                        and not stripped.startswith('Int')
+                        and not stripped.startswith('Grid')
+                        and not stripped.startswith('ARRAY')
+                        and ':' not in stripped
+                        and '=' not in stripped
+                        and stripped[0].isalpha()):
+                    # Check it matches varname[N]... (no space before '[')
+                    bracket_pos = stripped.index('[')
+                    before_bracket = stripped[:bracket_pos]
+                    if before_bracket and ' ' not in before_bracket:
+                        data_start = i
+                        shape_line = stripped
+                        break
+
+            if data_start is None or shape_line is None:
+                raise RuntimeError('Could not find data section in OPeNDAP response.')
+
+            # Parse shape: e.g. "Temperature_isobaric[2][41][11][21]"
+            parts = shape_line.split('[')
+            varname = parts[0]
+            timePoints      = int(parts[1].rstrip(']'))
+            pressurePoints  = int(parts[2].rstrip(']'))
+            latitudePoints  = int(parts[3].rstrip(']'))
+            longitudePoints = int(parts[4].rstrip(']'))
             totalPoints = timePoints * pressurePoints * latitudePoints * longitudePoints
 
             # Initialize the matrix
-            results = numpy.zeros(totalPoints).reshape((latitudePoints,
-                longitudePoints, pressurePoints, timePoints))
+            results = numpy.zeros(totalPoints).reshape(
+                (latitudePoints, longitudePoints, pressurePoints, timePoints))
 
-            # Populate the results matrix
-            for line in dataLines[1:-12]:
-                # Skip empty lines
-                if line == '': continue
-
-                # Find the indexes related to this particular latitude line
-                #
-                # WARNING: THIS IS LIKELY TO CAUSE ISSUES IF THE GFS FORMAT CHANGES!
-                #
-                # If the GFS data format changes, modify it here!
-                # This is VERY format-dependent!
-                timeIndex = int(line.split(',')[0].split('][')[0][1:])
-                pressureIndex = int(line.split(',')[0].split('][')[1])
-                latitudeIndex = int(line.split(',')[0].split('][')[2][:-1])
-
-                # Store values
+            # Populate the results matrix from data lines that start with '['
+            for line in dataLines[data_start + 1:]:
+                stripped = line.strip()
+                if not stripped or stripped[0] != '[':
+                    break
+                idx_part = stripped.split(',')[0]
+                idx_parts = idx_part.split('][')
+                timeIndex     = int(idx_parts[0][1:])
+                pressureIndex = int(idx_parts[1])
+                latitudeIndex = int(idx_parts[2][:-1])
                 results[latitudeIndex, :, pressureIndex, timeIndex] = [
-                    float(x) if float(x) < 1e8 else 0 for x in line.split(',')[1:]]
+                    float(x) if float(x) < 1e8 else 0
+                    for x in stripped.split(',')[1:]
+                ]
 
-            # Generate the mapping. This is an object containing mapping
-            # information between GFS indices for lat,lon,press, time and
-            # actual values, and viceversa. "Forward" maps are GFS indices ->
-            # real values and are LISTS. "Reverse" maps are real values -> GFS
-            # indices and are DICTIONARIES. These are used to be able to find a
-            # data value given real coordinates and for interpolation.
-
+            # Generate the mapping by searching for coordinate-value sections.
+            # Each coordinate section is a header line "varname.coord[N]" followed
+            # by a line of comma-separated values.
             resultsMap = GFS_Map()
+            resultsMap.fwdTime = None
+            resultsMap.fwdPressure = None
+            resultsMap.fwdLatitude = None
+            resultsMap.fwdLongitude = None
 
-            resultsMap.fwdLatitude = [float(lat) for lat in dataLines[-4].split(',')]
-            resultsMap.revLatitude = {lat: ind for (lat, ind) in
-                                      zip(resultsMap.fwdLatitude,
-                                          range(len(resultsMap.fwdLatitude)))}
+            for i, line in enumerate(dataLines):
+                stripped = line.strip()
+                if i + 1 >= len(dataLines):
+                    break
+                vals_line = dataLines[i + 1].strip()
 
-            resultsMap.fwdLongitude = [float(lon) - 360 if float(lon) > 180 else float(lon) for lon in
-                                       dataLines[-2].split(',')]
-            resultsMap.revLongitude = {lon: ind for (lon, ind) in
-                                       zip(resultsMap.fwdLongitude, 
-                                           range(len(resultsMap.fwdLongitude)))}
+                if stripped.startswith(varname + '.time') and '[' in stripped:
+                    resultsMap.fwdTime = [float(v) for v in vals_line.split(',')]
 
-            resultsMap.fwdPressure = [float(press) for press in dataLines[-6].split(',')]
-            resultsMap.revPressure = {press: ind for (press, ind) in
-                                      zip(resultsMap.fwdPressure, range(
-                                          len(resultsMap.fwdPressure)))}
+                elif stripped.startswith(varname + '.isobaric') and '[' in stripped:
+                    # Unidata pressure values are in Pascals; convert to hPa so
+                    # the existing getDensity calculation (which multiplies by 100
+                    # to go from hPa to Pa) remains correct.
+                    resultsMap.fwdPressure = [
+                        float(v) / 100.0 for v in vals_line.split(',')
+                    ]
 
-            resultsMap.fwdTime = [float(time) for time in dataLines[-8].split(',')]
-            resultsMap.revTime = {time: ind for (time, ind) in zip(
-                resultsMap.fwdTime, range(len(resultsMap.fwdTime)))}
+                elif stripped.startswith(varname + '.lat') and '[' in stripped:
+                    resultsMap.fwdLatitude = [float(v) for v in vals_line.split(',')]
+
+                elif stripped.startswith(varname + '.lon') and '[' in stripped:
+                    resultsMap.fwdLongitude = [
+                        float(v) - 360 if float(v) > 180 else float(v)
+                        for v in vals_line.split(',')
+                    ]
+
+            if any(v is None for v in (
+                    resultsMap.fwdTime, resultsMap.fwdPressure,
+                    resultsMap.fwdLatitude, resultsMap.fwdLongitude)):
+                raise RuntimeError(
+                    'Could not parse coordinate arrays from OPeNDAP response.')
+
+            resultsMap.revLatitude  = {lat: ind for ind, lat
+                                       in enumerate(resultsMap.fwdLatitude)}
+            resultsMap.revLongitude = {lon: ind for ind, lon
+                                       in enumerate(resultsMap.fwdLongitude)}
+            resultsMap.revPressure  = {p: ind for ind, p
+                                       in enumerate(resultsMap.fwdPressure)}
+            resultsMap.revTime      = {t: ind for ind, t
+                                       in enumerate(resultsMap.fwdTime)}
 
             overallResults.append(results)
             overallMaps.append(resultsMap)
