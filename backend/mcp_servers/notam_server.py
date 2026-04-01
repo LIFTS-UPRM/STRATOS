@@ -1,4 +1,4 @@
-"""NOTAM Checker MCP server — dual-source airspace advisory query.
+"""Airspace hazard MCP server — aviation hazard advisory query.
 
 Can be run as standalone MCP server:
     python -m mcp_servers.notam_server
@@ -7,17 +7,19 @@ Tool function is also importable directly for agent dispatch.
 """
 from __future__ import annotations
 
-import math
 from typing import Any
 
 import httpx
 from fastmcp import FastMCP
 
-mcp = FastMCP("liftoff-notam")
+mcp = FastMCP("liftoff-airspace")
 
-_FAA_TOKEN_URL = "https://external-api.faa.gov/notamapi/v1/oauth/token"
+_AW_SIGMET_URL = "https://aviationweather.gov/api/data/sigmet"
+_AW_GAIRMET_URL = "https://aviationweather.gov/api/data/gairmet"
+
+# FAA NOTAM API endpoints
+_FAA_TOKEN_URL = "https://login.faa.gov/oauth/token"
 _FAA_NOTAM_URL = "https://external-api.faa.gov/notamapi/v1/notams"
-_AW_NOTAM_URL  = "https://aviationweather.gov/api/data/notam"
 
 # Keywords that flag a NOTAM as balloon-relevant (matched case-insensitively)
 _KEYWORDS = [
@@ -72,126 +74,109 @@ async def _call_faa_api(
         return result
 
 
-async def _call_aviationweather(
-    lat: float, lon: float, radius_km: float,
-) -> list[dict]:
-    """Return list of normalised NOTAM dicts from AviationWeather.gov.
-
-    Raises httpx.HTTPError on any network or HTTP failure.
-    Each returned dict: {"id": str, "text": str, "source": "aviationweather"}
-    """
-    delta_lat = radius_km / 111.32
-    delta_lon = radius_km / (111.32 * math.cos(math.radians(lat)))
-    bbox = f"{lat - delta_lat},{lon - delta_lon},{lat + delta_lat},{lon + delta_lon}"
-
+async def _call_sigmet() -> list[dict]:
+    """Return normalized SIGMET records from AviationWeather."""
     async with httpx.AsyncClient(timeout=10.0) as client:
-        resp = await client.get(_AW_NOTAM_URL, params={"format": "json", "bbox": bbox})
+        resp = await client.get(_AW_SIGMET_URL, params={"format": "json"})
         resp.raise_for_status()
 
-    raw   = resp.json()
-    items = raw if isinstance(raw, list) else raw.get("notams", [])
+    raw = resp.json()
+    items = raw if isinstance(raw, list) else raw.get("data", [])
     result = []
     for item in items:
-        if isinstance(item, str):
-            result.append({
-                "id":     str(abs(hash(item)))[:8],
-                "text":   item,
-                "source": "aviationweather",
-            })
-        else:
-            notam_id = item.get("notamNumber") or item.get("id") or str(abs(hash(str(item))))[:8]
-            text     = item.get("icaoMessage") or item.get("text") or str(item)
-            result.append({"id": notam_id, "text": text, "source": "aviationweather"})
+        result.append({
+            "id": item.get("id") or item.get("airsigmetId") or str(abs(hash(str(item))))[:8],
+            "text": item.get("rawText") or item.get("hazard") or str(item),
+            "source": "aviationweather_sigmet",
+            "raw": item,
+        })
     return result
 
 
-def _scan_keywords(text: str) -> list[str]:
-    upper = text.upper()
-    return [kw for kw in _KEYWORDS if kw in upper]
+async def _call_gairmet() -> list[dict]:
+    """Return normalized G-AIRMET records from AviationWeather."""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        resp = await client.get(_AW_GAIRMET_URL, params={"format": "json"})
+        resp.raise_for_status()
+
+    raw = resp.json()
+    items = raw if isinstance(raw, list) else raw.get("data", [])
+    result = []
+    for item in items:
+        result.append({
+            "id": item.get("id") or item.get("airmetId") or str(abs(hash(str(item))))[:8],
+            "text": item.get("rawText") or item.get("hazard") or str(item),
+            "source": "aviationweather_gairmet",
+            "raw": item,
+        })
+    return result
 
 
-def _deduplicate(notams: list[dict]) -> list[dict]:
+def _deduplicate(items: list[dict]) -> list[dict]:
     seen: set[str] = set()
     result = []
-    for n in notams:
-        key = n["id"].upper()
+    for item in items:
+        key = item["id"].upper()
         if key not in seen:
             seen.add(key)
-            result.append(n)
+            result.append(item)
     return result
 
 
-def _determine_clearance(relevant: list[dict]) -> str:
-    if not relevant:
-        return "NO_CRITICAL_ALERTS"
-    for n in relevant:
-        if set(n.get("keywords_matched", [])) & _CRITICAL_KEYWORDS:
-            return "MANUAL_CHECK_REQUIRED"
-    return "REVIEW_REQUIRED"
+def _determine_hazard_status(hazards: list[dict], sources_queried: list[str]) -> str:
+    if not sources_queried:
+        return "MANUAL_CHECK_REQUIRED"
+    if hazards:
+        return "REVIEW_REQUIRED"
+    return "NO_MAJOR_HAZARDS"
 
 
 @mcp.tool()
-async def check_notam_airspace(
+async def check_airspace_hazards(
     latitude: float,
     longitude: float,
     radius_km: float = 25.0,
     launch_datetime: str = "",
-    faa_client_id: str = "",
-    faa_client_secret: str = "",
 ) -> dict[str, Any]:
-    """Check NOTAMs for balloon launch airspace using FAA + AviationWeather.gov.
+    """Check live aviation hazard products for a balloon launch area.
 
-    Args:
-        latitude: Launch site latitude (-90 to 90).
-        longitude: Launch site longitude (-180 to 180).
-        radius_km: Search radius in km (default 25).
-        launch_datetime: ISO 8601 launch datetime (informational).
-        faa_client_id: FAA API client ID (from config, optional).
-        faa_client_secret: FAA API client secret (from config, optional).
-
-    Returns:
-        Dict with total_notams, relevant_notams, clearance_status,
-        sources_queried, observation_links.
+    This is not an official NOTAM clearance tool.
+    Manual NOTAM/TFR verification is still required before launch.
     """
     sources_queried: list[str] = []
-    all_notams: list[dict] = []
+    hazards: list[dict] = []
 
-    # ── FAA source ────────────────────────────────────────────────────────────
-    if faa_client_id and faa_client_secret:
-        try:
-            faa_notams = await _call_faa_api(
-                faa_client_id, faa_client_secret, latitude, longitude, radius_km,
-            )
-            all_notams.extend(faa_notams)
-            sources_queried.append("faa")
-        except httpx.HTTPError:
-            pass  # Degrade gracefully
-
-    # ── AviationWeather.gov source ────────────────────────────────────────────
     try:
-        aw_notams = await _call_aviationweather(latitude, longitude, radius_km)
-        all_notams.extend(aw_notams)
-        sources_queried.append("aviationweather")
+        sigmets = await _call_sigmet()
+        hazards.extend(sigmets)
+        sources_queried.append("aviationweather_sigmet")
     except httpx.HTTPError:
         pass
 
-    # ── Merge, deduplicate, filter ────────────────────────────────────────────
-    merged   = _deduplicate(all_notams)
-    relevant = []
-    for n in merged:
-        matched = _scan_keywords(n["text"])
-        if matched:
-            relevant.append({**n, "keywords_matched": matched})
+    try:
+        gairmets = await _call_gairmet()
+        hazards.extend(gairmets)
+        sources_queried.append("aviationweather_gairmet")
+    except httpx.HTTPError:
+        pass
+
+    merged = _deduplicate(hazards)
 
     return {
-        "total_notams":     len(merged),
-        "relevant_notams":  relevant,
-        "clearance_status": _determine_clearance(relevant),
-        "sources_queried":  sources_queried,
+        "hazard_status": _determine_hazard_status(merged, sources_queried),
+        "total_hazards": len(merged),
+        "hazards": merged,
+        "sources_queried": sources_queried,
+        "manual_notam_check_required": True,
         "observation_links": {
             "faa_notam_search": "https://notams.aim.faa.gov/notamSearch/",
-            "aviationweather":  "https://aviationweather.gov/notam",
+            "aviationweather_sigmet": "https://aviationweather.gov/",
+            "aviationweather_gairmet": "https://aviationweather.gov/",
         },
+        "summary": (
+            "Live aviation hazard products were checked. "
+            "This does not replace official NOTAM/TFR review."
+        ),
     }
 
 

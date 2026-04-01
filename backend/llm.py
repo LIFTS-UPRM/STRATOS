@@ -83,16 +83,17 @@ WEATHER_TOOLS: list[dict] = [
     },
 ]
 
-NOTAM_TOOLS: list[dict] = [
+AIRSPACE_TOOLS: list[dict] = [
     {
         "type": "function",
         "function": {
-            "name": "check_notam_airspace",
+            "name": "check_airspace_hazards",
             "description": (
-                "Check NOTAMs for balloon launch airspace using FAA + AviationWeather.gov. "
-                "Returns relevant NOTAMs and clearance status: NO_CRITICAL_ALERTS, "
-                "REVIEW_REQUIRED, or MANUAL_CHECK_REQUIRED. "
-                "Call this when the user asks about airspace safety or launch clearance."
+                "Check live aviation hazard products for a launch area using AviationWeather. "
+                "Returns hazard_status, hazards, and sources_queried. "
+                "This does not replace official NOTAM/TFR clearance, so manual NOTAM review "
+                "is still required. Call this when the user asks about airspace safety, "
+                "aviation hazards, or launch safety."
             ),
             "parameters": {
                 "type": "object",
@@ -330,7 +331,7 @@ ASTRA_TOOLS: list[dict] = [
     },
 ]
 
-ALL_TOOLS = WEATHER_TOOLS + NOTAM_TOOLS + ASTRA_TOOLS
+ALL_TOOLS = WEATHER_TOOLS + AIRSPACE_TOOLS + ASTRA_TOOLS
 
 
 def get_tools() -> list[dict]:
@@ -349,13 +350,13 @@ and return a clear, structured mission brief.
 Guidelines:
 - Always call get_surface_weather before recommending a launch window.
 - Call get_winds_aloft when the user needs upper-level wind patterns outside of an ASTRA simulation.
-- Call check_notam_airspace when the user asks about airspace clearance or launch safety.
+- Call check_airspace_hazards when the user asks about airspace safety, aviation hazards, or launch safety.
 - Call astra_list_balloons and astra_list_parachutes when hardware selection is unclear.
 - Call astra_calculate_nozzle_lift before astra_run_simulation when the user gives a target ascent rate but not a nozzle lift.
 - Call astra_run_simulation to compute landing prediction and uncertainty; it pulls NOAA GFS data itself, so do not call get_winds_aloft first unless the user separately wants the wind profile.
 - Lead with the overall GO / CAUTION / NO-GO recommendation.
 - Explicitly name threshold violations (e.g., "Surface wind 8.2 m/s exceeds the 7.0 m/s CAUTION threshold").
-- Report NOTAM clearance_status clearly; MANUAL_CHECK_REQUIRED always requires human review.
+- Report hazard_status clearly and always state that manual NOTAM/TFR verification is still required.
 - Include observation_links when available from tool results.
 - Be concise. Use short paragraphs and bullet points.
 """
@@ -397,7 +398,7 @@ async def execute_tool(name: str, tool_input: dict) -> str:
         astra_list_parachutes,
         astra_run_simulation,
     )
-    from mcp_servers.notam_server import check_notam_airspace
+    from mcp_servers.notam_server import check_airspace_hazards
     from mcp_servers.weather_server import get_surface_weather, get_winds_aloft
 
     if name == "get_surface_weather":
@@ -406,8 +407,8 @@ async def execute_tool(name: str, tool_input: dict) -> str:
     elif name == "get_winds_aloft":
         result = await get_winds_aloft(**tool_input)
 
-    elif name == "check_notam_airspace":
-        result = await check_notam_airspace(**tool_input)
+    elif name == "check_airspace_hazards":
+        result = await check_airspace_hazards(**tool_input)
 
     elif name == "astra_list_balloons":
         result = await astra_list_balloons(**tool_input)
