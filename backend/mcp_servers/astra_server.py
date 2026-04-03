@@ -13,7 +13,6 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.utilities import func_metadata as _fastmcp_func_metadata
 from pydantic import BaseModel, ConfigDict, Field, create_model, field_validator
 
-from vendor import hab_predictor
 from vendor.hab_predictor.astra.available_balloons_parachutes import (
     balloons,
     parachutes,
