@@ -10,7 +10,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from llm import OpenAIProvider, execute_tool
 from app.config import get_settings
 from app.logging import configure_logging
-from app.schemas import ChatRequest, ChatResponse, ToolCallRecord
+from app.schemas import (
+    ChatHistoryMessage,
+    ChatRequest,
+    ChatResponse,
+    ToolCallRecord,
+    TrajectoryArtifact,
+)
 
 
 settings = get_settings()
@@ -40,19 +46,39 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+def _serialize_history_message(message: ChatHistoryMessage) -> str:
+    content = message.content.strip()
+    if message.role != "assistant" or not message.tool_calls:
+        return content
+
+    tool_context = "\n".join(
+        f"- {tool_call.name}: {json.dumps(tool_call.args, sort_keys=True, default=str)}"
+        for tool_call in message.tool_calls
+    )
+    if not content:
+        return f"Previous tool calls:\n{tool_context}"
+    return f"{content}\n\nPrevious tool calls:\n{tool_context}"
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(payload: ChatRequest) -> ChatResponse:
     logger.info("Received chat message (%d chars)", len(payload.message))
 
     tool_calls_log: list[ToolCallRecord] = []
+    trajectory_artifact: TrajectoryArtifact | None = None
     try:
         provider = OpenAIProvider()
         client = provider.get_client()
 
-        messages: list[dict] = [
-            {"role": "system", "content": provider.get_system_prompt()},
-            {"role": "user", "content": payload.message},
-        ]
+        messages: list[dict] = [{"role": "system", "content": provider.get_system_prompt()}]
+        for history_message in payload.history:
+            if history_message.role not in {"user", "assistant"}:
+                continue
+            content = _serialize_history_message(history_message)
+            if content:
+                messages.append({"role": history_message.role, "content": content})
+
+        messages.append({"role": "user", "content": payload.message})
         last_tool_name = "llm"
         max_steps = 10
         seen_calls: set[tuple[str, str]] = set()
@@ -60,12 +86,16 @@ async def chat(payload: ChatRequest) -> ChatResponse:
         for step in range(max_steps):
             logger.info("LLM step %d", step + 1)
 
-            response = await client.chat.completions.create(
-                model=provider.get_model(),
-                messages=messages,
-                tools=provider.get_tools(),
-                tool_choice="auto",
-            )
+            completion_kwargs = {
+                "model": provider.get_model(),
+                "messages": messages,
+            }
+            enabled_tools = provider.get_tools(payload.enabled_tool_groups)
+            if enabled_tools:
+                completion_kwargs["tools"] = enabled_tools
+                completion_kwargs["tool_choice"] = "auto"
+
+            response = await client.chat.completions.create(**completion_kwargs)
 
             assistant_message = response.choices[0].message
 
@@ -80,6 +110,7 @@ async def chat(payload: ChatRequest) -> ChatResponse:
                     response=final_text,
                     source=source,
                     tool_calls=tool_calls_log,
+                    trajectory_artifact=trajectory_artifact,
                 )
 
             # Append assistant tool-call message
@@ -116,6 +147,7 @@ async def chat(payload: ChatRequest) -> ChatResponse:
                         response=f"Tool call failed: invalid JSON arguments for {tool_name}.",
                         source="tool_error",
                         tool_calls=tool_calls_log,
+                        trajectory_artifact=trajectory_artifact,
                     )
 
                 tool_key = (tool_name, json.dumps(tool_args, sort_keys=True))
@@ -154,6 +186,21 @@ async def chat(payload: ChatRequest) -> ChatResponse:
                         parsed_result = json.loads(tool_result)
                         if isinstance(parsed_result, dict) and parsed_result.get("error"):
                             logger.warning("Tool returned error payload: %s", tool_name)
+                        if (
+                            tool_name == "astra_run_simulation"
+                            and isinstance(parsed_result, dict)
+                            and parsed_result.get("status") == "success"
+                            and parsed_result.get("trajectory_artifact")
+                        ):
+                            try:
+                                trajectory_artifact = TrajectoryArtifact.model_validate(
+                                    parsed_result["trajectory_artifact"]
+                                )
+                            except Exception:
+                                logger.exception(
+                                    "Failed to parse trajectory artifact from %s",
+                                    tool_name,
+                                )
                     except json.JSONDecodeError:
                         # If it's not JSON, just leave it alone
                         parsed_result = None
@@ -178,6 +225,7 @@ async def chat(payload: ChatRequest) -> ChatResponse:
             response="Tool-calling loop reached the maximum number of steps.",
             source="tool_loop_limit",
             tool_calls=tool_calls_log,
+            trajectory_artifact=trajectory_artifact,
         )
 
     except Exception as e:
@@ -186,4 +234,5 @@ async def chat(payload: ChatRequest) -> ChatResponse:
             response=f"Server error: {str(e)}",
             source="error",
             tool_calls=tool_calls_log,
+            trajectory_artifact=trajectory_artifact,
         )

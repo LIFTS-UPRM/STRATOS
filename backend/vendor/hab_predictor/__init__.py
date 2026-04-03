@@ -1,4 +1,4 @@
-"""Vendored ASTRA MCP package bootstrap."""
+"""Vendored HAB_Predictor package bootstrap for STRATOS."""
 from __future__ import annotations
 
 import sys

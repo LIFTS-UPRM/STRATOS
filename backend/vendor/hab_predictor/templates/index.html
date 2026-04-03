@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASTRA Flight Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  >
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div id="map" aria-label="Flight map"></div>
+  <div class="map-scrim" aria-hidden="true"></div>
+
+  <div class="overlay-shell">
+    <header class="topbar panel">
+      <div class="brand-copy">
+        <p class="eyebrow">ASTRA</p>
+        <h1>Flight predictor</h1>
+      </div>
+
+      <div class="topbar-meta">
+        <span class="meta-pill" id="mission-badge">TA800 · Helium</span>
+        <span class="meta-pill" id="forecast-pill">Awaiting forecast</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" class="ghost-button" id="use-device-location">Use my location</button>
+        <button type="button" class="ghost-button" id="use-map">Use map center</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel control-panel">
+        <div class="panel-intro">
+          <p class="panel-kicker">Predictor</p>
+          <h2>Set launch, choose a profile, run.</h2>
+          <p class="panel-note" id="location-note">Click the map or drag the marker to place launch. Browser location can replace the UPRM default.</p>
+          <div class="inline-meta" aria-live="polite">
+            <span class="inline-meta__item" id="launch-badge">18.2116, -67.1396</span>
+            <span class="inline-meta__item" id="mode-badge">Burst profile</span>
+          </div>
+        </div>
+
+        <form id="sim-form" class="mission-form">
+          <section class="panel-section">
+            <div class="section-heading">
+              <span>Launch</span>
+              <span class="section-caption">Map first</span>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Latitude</span>
+                <input id="launch_lat" name="launch_lat" type="number" step="0.000001" value="18.2116" required>
+              </label>
+              <label>
+                <span>Longitude</span>
+                <input id="launch_lon" name="launch_lon" type="number" step="0.000001" value="-67.1396" required>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Launch date</span>
+                <input id="launch_date" name="launch_date" type="date" required>
+              </label>
+              <label>
+                <span>Launch time</span>
+                <input id="launch_time" name="launch_time" type="time" step="60" required>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label class="field-span-2">
+                <small id="timezone-note" aria-live="polite">Shown in your local time zone. Backend receives UTC.</small>
+              </label>
+              <label>
+                <span>Launch elevation (m)</span>
+                <input id="launch_elevation_m" name="launch_elevation_m" type="number" step="1" value="4">
+                <div class="field-meta">
+                  <small id="elevation-note" aria-live="polite">Terrain fills automatically from OpenTopoData.</small>
+                  <button type="button" class="mini-button" id="refresh-elevation">Use terrain</button>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-heading">
+              <span>Flight profile</span>
+              <span class="section-caption">Core inputs only</span>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Balloon</span>
+                <select id="balloon_model" name="balloon_model"></select>
+              </label>
+              <label>
+                <span>Payload (kg)</span>
+                <input id="payload_weight_kg" name="payload_weight_kg" type="number" step="0.001" value="0.433" required>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Target ascent (m/s)</span>
+                <input id="ascent_rate_ms" name="ascent_rate_ms" type="number" step="0.1" value="5.0">
+              </label>
+              <label>
+                <span>Parachute</span>
+                <select id="parachute_model" name="parachute_model"></select>
+              </label>
+            </div>
+
+            <div class="helper-stack">
+              <p class="helper-note">Nozzle lift is calculated automatically from your ascent target. Open advanced options only if you want to override it.</p>
+              <div id="calc-summary" class="inline-summary">
+                <span>Awaiting lift estimate.</span>
+              </div>
+            </div>
+          </section>
+
+          <details class="panel-section advanced-section">
+            <summary>
+              <span>Advanced options</span>
+              <span class="section-caption">Optional</span>
+            </summary>
+
+            <div class="field-grid">
+              <label>
+                <span>Gas</span>
+                <select id="gas_type" name="gas_type">
+                  <option value="Helium">Helium</option>
+                  <option value="Hydrogen">Hydrogen</option>
+                </select>
+              </label>
+              <label>
+                <span>Simulation runs</span>
+                <input id="num_runs" name="num_runs" type="number" min="1" max="20" step="1" value="5">
+                <small>More runs widen the landing envelope but take longer.</small>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Nozzle lift (kg)</span>
+                <input id="nozzle_lift_kg" name="nozzle_lift_kg" type="number" step="0.01" value="">
+                <div class="field-meta">
+                  <small id="lift-note">Auto-computed from ascent rate unless you override it.</small>
+                  <button type="button" class="mini-button" id="estimate-lift">Recalculate</button>
+                </div>
+              </label>
+              <label class="switch-field">
+                <span>Fast forecast</span>
+                <input id="force_low_res" name="force_low_res" type="checkbox">
+                <small>Prefer speed over forecast detail.</small>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label class="switch-field">
+                <span>Floating flight</span>
+                <input id="floating_flight" name="floating_flight" type="checkbox">
+                <small>Hold at altitude instead of bursting.</small>
+              </label>
+              <label>
+                <span>Float altitude (m)</span>
+                <input id="floating_altitude_m" name="floating_altitude_m" type="number" step="100" placeholder="25000" disabled>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label class="switch-field">
+                <span>Cutdown</span>
+                <input id="cutdown" name="cutdown" type="checkbox">
+                <small>Force descent at a chosen ceiling.</small>
+              </label>
+              <label>
+                <span>Cutdown altitude (m)</span>
+                <input id="cutdown_altitude_m" name="cutdown_altitude_m" type="number" step="100" placeholder="18000" disabled>
+              </label>
+            </div>
+          </details>
+
+          <button type="submit" id="run-button" class="primary-button mission-submit">Run simulation</button>
+        </form>
+      </aside>
+
+      <aside class="panel results-panel">
+        <div class="results-head">
+          <div>
+            <p class="panel-kicker">Prediction</p>
+            <h2>Trajectory and landing view</h2>
+          </div>
+          <p id="status-copy">Set a launch point, review the essentials, and run a prediction.</p>
+        </div>
+
+        <div class="metric-strip">
+          <article class="metric-card">
+            <span class="metric-label">Peak altitude</span>
+            <strong id="metric-altitude">--</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Flight time</span>
+            <strong id="metric-duration">--</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Landing spread</span>
+            <strong id="metric-spread">--</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Burst rate</span>
+            <strong id="metric-burst">--</strong>
+          </article>
+        </div>
+
+        <section class="detail-block" id="calc-summary">
+          <h3>Preflight numbers</h3>
+          <p>Select a balloon and payload, then estimate lift or fill volume.</p>
+        </section>
+
+        <section class="detail-block" id="flight-summary">
+          <h3>Trajectory summary</h3>
+          <p>No simulation has been run yet.</p>
+        </section>
+
+        <section class="detail-block run-block">
+          <div class="detail-head">
+            <h3>Landing spread</h3>
+            <p id="run-copy">Run the simulator to inspect landing spread and burst outcomes.</p>
+          </div>
+          <div id="run-list" class="run-list">
+            <div class="run-empty">Landing chips appear here after a simulation.</div>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

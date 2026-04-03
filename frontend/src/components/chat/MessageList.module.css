@@ -55,6 +55,64 @@
   word-break: break-word;
 }
 
+/* ─── Trajectory artifact ───────────────────────────────────── */
+.trajectoryArtifact {
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+}
+
+.trajectoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.trajectoryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.trajectoryMeta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+}
+
+.trajectoryMap {
+  width: 100%;
+  height: 360px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.trajectoryTooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #0f172a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.trajectoryLoading {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
 /* ─── User message ────────────────────────────────────────────── */
 .userRow {
   display: flex;

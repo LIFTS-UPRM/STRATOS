@@ -2,8 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import type { Message, ToolCallRecord } from "@/types/chat";
 import styles from "./MessageList.module.css";
+
+const TrajectoryArtifactMap = dynamic(() => import("./TrajectoryArtifactMap"), {
+  ssr: false,
+  loading: () => (
+    <div className={styles.trajectoryLoading}>Loading trajectory map...</div>
+  ),
+});
 
 // ─── Helpers ───────────────────────────────────────────────────
 function formatUtcTime(date: Date): string {
@@ -84,6 +92,9 @@ function AssistantMessage({ message }: { message: Message }) {
         <span className={styles.assistantTime}>{formatUtcTime(message.createdAt)}</span>
       </div>
       <p className={styles.assistantText}>{message.content}</p>
+      {message.trajectoryArtifact && (
+        <TrajectoryArtifactMap artifact={message.trajectoryArtifact} />
+      )}
       {message.toolCalls && message.toolCalls.length > 0 && (
         <ToolCallsSection toolCalls={message.toolCalls} />
       )}

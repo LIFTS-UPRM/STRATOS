@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import type { McpToolGroupId } from "@/types/chat";
 import styles from "./Sidebar.module.css";
 
 // ─── Icons ────────────────────────────────────────────────────
@@ -54,19 +54,6 @@ function TelemetryIcon() {
   );
 }
 
-function SharePointIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-         stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="18" cy="5"  r="2.5" />
-      <circle cx="6"  cy="12" r="2.5" />
-      <circle cx="18" cy="19" r="2.5" />
-      <line x1="8.4"  y1="13.4" x2="15.6" y2="17.6" />
-      <line x1="15.6" y1="6.4"  x2="8.4"  y2="10.6" />
-    </svg>
-  );
-}
-
 function RocketIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"
@@ -80,11 +67,14 @@ function RocketIcon() {
 }
 
 // ─── Data ─────────────────────────────────────────────────────
-const TOOLS = [
-  { id: "flight",     label: "Trajectory Simulator", Icon: RouteIcon },
-  { id: "weather",    label: "Weather Data",    Icon: CloudIcon },
-  { id: "telemetry",  label: "Telemetry",       Icon: TelemetryIcon },
-  { id: "sharepoint", label: "SharePoint",      Icon: SharePointIcon },
+const TOOLS: {
+  id: McpToolGroupId;
+  label: string;
+  Icon: () => JSX.Element;
+}[] = [
+  { id: "trajectory", label: "Trajectory", Icon: RouteIcon },
+  { id: "weather", label: "Weather", Icon: CloudIcon },
+  { id: "airspace", label: "Airspace Weather", Icon: TelemetryIcon },
 ];
 
 type MissionStatus = "active" | "upcoming" | "completed";
@@ -122,15 +112,15 @@ function Toggle({
 interface SidebarProps {
   isOpen: boolean;
   onToggle?: () => void;
+  enabledToolGroups: Record<McpToolGroupId, boolean>;
+  onToggleToolGroup: (id: McpToolGroupId) => void;
 }
 
-export default function Sidebar({ isOpen }: SidebarProps) {
-  const [enabledTools, setEnabledTools] = useState<Record<string, boolean>>({});
-
-  function toggleTool(id: string) {
-    setEnabledTools((prev) => ({ ...prev, [id]: !prev[id] }));
-  }
-
+export default function Sidebar({
+  isOpen,
+  enabledToolGroups,
+  onToggleToolGroup,
+}: SidebarProps) {
   return (
     <aside className={styles.sidebar + (isOpen ? " " + styles.open : " " + styles.closed)}>
       {/* Brand row */}
@@ -165,7 +155,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           </div>
           <div className={styles.sectionBody}>
             {TOOLS.map(({ id, label, Icon }) => {
-              const on = !!enabledTools[id];
+              const on = enabledToolGroups[id];
               return (
                 <div
                   key={id}
@@ -177,7 +167,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                   <span className={styles.toolLabel + (on ? " " + styles.toolLabelOn : "")}>
                     {label}
                   </span>
-                  <Toggle checked={on} onChange={() => toggleTool(id)} label={label} />
+                  <Toggle
+                    checked={on}
+                    onChange={() => onToggleToolGroup(id)}
+                    label={label}
+                  />
                 </div>
               );
             })}

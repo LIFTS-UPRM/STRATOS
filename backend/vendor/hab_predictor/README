@@ -1,0 +1,198 @@
+# ASTRA Flight Desk
+
+A web-based launch planner for the University of Southampton ASTRA high-altitude balloon simulator. Plan, simulate, and predict the flight path of scientific balloon payloads with real-time weather data and Monte Carlo trajectory analysis.
+
+## Quick Start
+
+```bash
+# Install dependencies
+python3 -m pip install -r requirements.txt
+
+# Start the server
+python3 app.py
+
+# Open in browser
+open http://127.0.0.1:5000
+```
+
+## Features
+
+**Interactive Map-First Interface**
+- Select launch sites directly on an interactive map
+- Browse supported balloon models and parachute configurations
+- Estimate payload parameters (nozzle lift, fill volume)
+- Real-time weather visualization
+
+**Flight Simulation**
+- Run Monte Carlo trajectory simulations with configurable run counts
+- Visualize the primary flight path and landing spread
+- Export results in multiple formats (KML, JSON, CSV)
+
+**Intelligent Weather Data**
+- Primary source: Unidata THREDDS GFS (Global Forecast System) real-time data
+- Automatic fallback to cached GFS data when available
+- Open-Meteo pressure-level fallback for data resilience
+- Smart caching to minimize forecast API calls
+
+## Installation
+
+### Prerequisites
+- Python 3.7+
+- pip package manager
+
+### Setup
+
+```bash
+# Install required dependencies
+python3 -m pip install -r requirements.txt
+```
+
+**Optional: Development Install**
+```bash
+# Install in editable mode for development
+python3 -m pip install -e .
+```
+
+## Usage
+
+### Running the Web Application
+
+```bash
+python3 app.py
+```
+
+The application will start on the default address. You can configure it with environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ASTRA_HOST` | `127.0.0.1` | Server host address |
+| `ASTRA_PORT` | `5000` | Server port |
+| `ASTRA_DEBUG` | `false` | Enable debug mode |
+
+Example:
+```bash
+ASTRA_HOST=0.0.0.0 ASTRA_PORT=8080 ASTRA_DEBUG=1 python3 app.py
+```
+
+### Using the API
+
+ASTRA Flight Desk provides a JSON-based REST API for programmatic access:
+
+**Health & Configuration**
+- `GET /api/health` — Check server status
+- `GET /api/hardware` — Get available hardware configurations
+- `GET /api/balloons` — List available balloon models
+- `GET /api/parachutes` — List available parachute models
+
+**Calculations**
+- `POST /api/nozzle-lift` — Calculate nozzle lift from parameters
+- `POST /api/balloon-volume` — Calculate balloon volume from parameters
+
+**Simulation**
+- `POST /api/simulate` — Run a trajectory simulation
+
+**Example: Run a Simulation**
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/simulate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "launch_lat": 29.2108,
+    "launch_lon": -81.0228,
+    "launch_elevation_m": 4,
+    "launch_datetime": "2026-04-01T12:00:00",
+    "balloon_model": "TA800",
+    "gas_type": "Helium",
+    "nozzle_lift_kg": 2.0,
+    "payload_weight_kg": 0.433,
+    "parachute_model": "SPH36",
+    "num_runs": 5,
+    "force_low_res": false
+  }'
+```
+
+**Simulation Parameters**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `launch_lat` | float | Latitude of launch site |
+| `launch_lon` | float | Longitude of launch site |
+| `launch_elevation_m` | float | Launch elevation in meters |
+| `launch_datetime` | string | Launch time (ISO 8601 format, UTC) |
+| `balloon_model` | string | Balloon model identifier (e.g., `TA800`) |
+| `gas_type` | string | Fill gas type (e.g., `Helium`) |
+| `nozzle_lift_kg` | float | Lift provided by nozzle in kg |
+| `payload_weight_kg` | float | Total payload weight in kg |
+| `parachute_model` | string | Parachute model identifier (e.g., `SPH36`) |
+| `num_runs` | int | Number of Monte Carlo simulation runs |
+| `force_low_res` | bool | Force low-resolution forecast data |
+
+## Project Structure
+
+```
+app.py                    Flask web server and API layer
+astra/                    Core ASTRA simulation library
+  ├── simulator.py        Main trajectory simulation engine
+  ├── weather.py          Weather data handling and interpolation
+  ├── GFS.py              GFS forecast data retrieval and parsing
+  ├── flight_tools.py     Flight physics and calculations
+  ├── target_landing.py   Landing site prediction
+  └── ...                 Additional simulation modules
+bin/astra-sim            Legacy command-line interface
+docs/                    Documentation and API reference
+examples/                Example scripts and Jupyter notebooks
+static/                  Frontend JavaScript and CSS
+templates/               Flask HTML templates
+test/                    Test suite and fixtures
+requirements.txt         Python dependencies
+setup.py                 Package metadata and configuration
+```
+
+## Forecast Caching
+
+ASTRA caches downloaded GFS forecasts to reduce API calls and improve performance.
+
+**Cache Location**
+```
+./.cache/gfs/
+```
+
+**Clear the Cache**
+```bash
+rm -rf .cache/gfs
+```
+
+**Forecast Sources**
+The API returns metadata indicating the forecast source:
+- `downloaded` — Fresh data from THREDDS GFS
+- `cache-hit` — Data retrieved from local cache
+- `cache-fallback` — Cached data used due to connection issues
+- `open-meteo` — Data from Open-Meteo fallback service
+
+## Testing
+
+Run the test suite to verify installation and functionality:
+
+```bash
+PYTHONPATH=. pytest test/test_web_app.py test/test_flight.py test/test_weather.py -v
+```
+
+**Test Modules**
+- `test_web_app.py` — HTTP API tests
+- `test_flight.py` — Flight simulation tests
+- `test_weather.py` — Weather data handling tests
+
+## Technical Notes
+
+- **Time Format**: All `launch_datetime` values must be in ISO 8601 format (e.g., `2026-04-01T12:00:00`) and are interpreted as UTC
+- **Pressure Units**: THREDDS GFS pressure coordinates are automatically converted from Pa to hPa internally
+- **UTC Assumption**: The web UI displays times as UTC to match forecast data standards
+
+## Development
+
+**Project Origins**
+ASTRA was originally developed by the University of Southampton for high-altitude balloon flight prediction. This fork provides a modern web-based interface for simulation and planning workflows.
+
+## License
+
+See LICENSE file for details.

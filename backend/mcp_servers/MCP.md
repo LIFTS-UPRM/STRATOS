@@ -89,7 +89,7 @@ This document describes the MCP tools currently exposed by STRATOS.
 
 - Server name: `astra_mcp`
 - File: `backend/mcp_servers/astra_server.py`
-- Purpose: List ASTRA-supported balloon models and their physical specs.
+- Purpose: List HAB_Predictor/ASTRA-supported balloon models and their physical specs.
 
 ### Inputs
 
@@ -110,7 +110,7 @@ This document describes the MCP tools currently exposed by STRATOS.
 
 - Server name: `astra_mcp`
 - File: `backend/mcp_servers/astra_server.py`
-- Purpose: List ASTRA-supported parachute models.
+- Purpose: List HAB_Predictor/ASTRA-supported parachute models.
 
 ### Inputs
 
@@ -131,7 +131,8 @@ This document describes the MCP tools currently exposed by STRATOS.
 
 - Server name: `astra_mcp`
 - File: `backend/mcp_servers/astra_server.py`
-- Purpose: Estimate the nozzle lift needed to achieve a target ascent rate.
+- Purpose: Estimate the nozzle lift needed to achieve a target ascent rate using
+  the vendored HAB_Predictor simulator code.
 
 ### Inputs
 
@@ -159,7 +160,8 @@ This document describes the MCP tools currently exposed by STRATOS.
 
 - Server name: `astra_mcp`
 - File: `backend/mcp_servers/astra_server.py`
-- Purpose: Estimate fill volume, gas mass, and free lift from a known nozzle lift.
+- Purpose: Estimate fill volume, gas mass, and free lift from a known nozzle lift
+  using the vendored HAB_Predictor simulator code.
 
 ### Inputs
 
@@ -187,7 +189,8 @@ This document describes the MCP tools currently exposed by STRATOS.
 
 - Server name: `astra_mcp`
 - File: `backend/mcp_servers/astra_server.py`
-- Purpose: Run an ASTRA Monte Carlo balloon flight simulation using NOAA GFS forecasts.
+- Purpose: Run a HAB_Predictor/ASTRA Monte Carlo balloon flight simulation in-process
+  using NOAA GFS forecasts, cache fallback, and SondeHub calibration.
 
 ### Inputs
 
@@ -215,6 +218,8 @@ This document describes the MCP tools currently exposed by STRATOS.
 - `runs`: Per-run landing and duration summaries.
 - `aggregate`: Aggregate landing, altitude, duration, and burst statistics.
 - `trajectory_run1`: Sampled trajectory points for the first simulation.
+- `trajectory_artifact`: Mean resampled trajectory, launch/burst/landing markers,
+  and one-sigma landing uncertainty for STRATOS chat rendering.
 
 ### Error behavior
 
@@ -229,8 +234,11 @@ From the `backend/` directory:
 ```bash
 python -m mcp_servers.notam_server
 python -m mcp_servers.weather_server
-python -m mcp_servers.astra_server
 ```
+
+`astra_mcp` is imported in-process by the STRATOS backend, so a separate ASTRA/HAB
+server process is not required for normal chat usage. `python -m mcp_servers.astra_server`
+remains available only as an optional standalone stdio MCP entrypoint.
 
 ---
 

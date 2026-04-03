@@ -1,0 +1,45 @@
+# Python Build & Packaging
+*astra.egg-info/
+*.egg-info/
+*.pyc
+__pycache__/
+.pytest_cache/
+*/dist/
+*/build/
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+.env
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Cache & Logs
+.cache
+*.cache
+.ipynb_checkpoints
+astra_py_error.log
+*.log
+*.lprof
+
+# Output Files
+out.*
+output/
+results/
+
+# Data & Profiling
+*.dat
+*_progress.json
+
+# Deprecated/Legacy
+simulator/examples/astra_output*

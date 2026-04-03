@@ -124,7 +124,7 @@ class Linear4DInterpolator(object):
             i -= 1
         idx0 = [i - 1, i]
         i = numpy.digitize([press], self.dmap[2])[0]
-        if i == len(self.dmap[1]):
+        if i == len(self.dmap[2]):
             i -= 1
         idx2 = [i - 1, i]
         i = numpy.digitize([time], self.dmap[3])[0]

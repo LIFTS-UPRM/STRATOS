@@ -1,0 +1,33 @@
+Dataset {
+    Grid {
+     ARRAY:
+        Float32 Temperature_isobaric[time1 = 2][isobaric = 2][lat = 2][lon = 2];
+     MAPS:
+        Float64 time1[time1 = 2];
+        Float32 isobaric[isobaric = 2];
+        Float32 lat[lat = 2];
+        Float32 lon[lon = 2];
+    } Temperature_isobaric;
+} grib/NCEP/GFS/Global_0p25deg/Best;
+---------------------------------------------
+Temperature_isobaric.Temperature_isobaric[2][2][2][2]
+[0][0][0], 292.3999, 292.4499
+[0][0][1], 292.8999, 292.8299
+[0][1][0], 292.44992, 292.31992
+[0][1][1], 292.31992, 292.23993
+[1][0][0], 293.0741, 292.92407
+[1][0][1], 293.11407, 292.96408
+[1][1][0], 292.47604, 292.32605
+[1][1][1], 293.21603, 293.06604
+
+Temperature_isobaric.time1[2]
+0.0, 3.0
+
+Temperature_isobaric.isobaric[2]
+85000.0, 90000.0
+
+Temperature_isobaric.lat[2]
+2.5, 2.25
+
+Temperature_isobaric.lon[2]
+175.0, 175.25

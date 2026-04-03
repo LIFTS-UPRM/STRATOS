@@ -47,7 +47,7 @@ STRATOS brings these functions together into a single mission platform.
 
 The **Chat** module is the intelligence layer of STRATOS.
 
-It allows users to interact with mission tools and documents through natural language. The assistant can talk to external tools such as the vendored **ASTRA** balloon flight simulator, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
+It allows users to interact with mission tools and documents through natural language. The assistant can talk to in-process MCP tools backed by the full vendored **HAB_Predictor/ASTRA** simulator, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
 
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
@@ -196,7 +196,7 @@ Key outputs:
 - winds aloft: `wind_profile`, `jet_stream_alert`, `jet_stream_message`, `forecast_time`
 - both include `observation_links`
 
-#### 3) ASTRA Server (`astra_mcp`)
+#### 3) HAB_Predictor / ASTRA MCP (`astra_mcp`)
 
 File: `backend/mcp_servers/astra_server.py`
 
@@ -212,12 +212,14 @@ What they do:
 
 - list supported ASTRA balloon and parachute hardware
 - calculate nozzle lift and fill volume for pre-flight setup
-- run Monte Carlo balloon trajectory simulations with NOAA GFS forecasts
+- run Monte Carlo balloon trajectory simulations with NOAA GFS forecasts and
+  SondeHub calibration from the vendored HAB_Predictor Python code
 
 Key outputs:
 
 - hardware tools return structured ASTRA model catalogs and calculation results
-- simulation output includes `status`, `forecast`, `runs`, `aggregate`, and `trajectory_run1`
+- simulation output includes `status`, `forecast`, `runs`, `aggregate`,
+  `trajectory_run1`, and `trajectory_artifact`
 
 ### Running MCP Servers Locally
 
@@ -226,8 +228,12 @@ From the `backend/` directory:
 ```bash
 python -m mcp_servers.notam_server
 python -m mcp_servers.weather_server
-python -m mcp_servers.astra_server
 ```
+
+`astra_mcp` is loaded directly inside the FastAPI backend from
+`backend/vendor/hab_predictor`, so a separate ASTRA/HAB server process is not
+required for normal chat flows. The standalone `python -m mcp_servers.astra_server`
+command is optional if you want to run the stdio MCP by itself.
 
 ### README Template for New MCP Tools
 

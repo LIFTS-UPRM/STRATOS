@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import abc
 import json
-from typing import Any
+from typing import Any, Literal
 
 from openai import AsyncOpenAI
 
@@ -332,11 +332,22 @@ ASTRA_TOOLS: list[dict] = [
 ]
 
 ALL_TOOLS = WEATHER_TOOLS + AIRSPACE_TOOLS + ASTRA_TOOLS
+McpToolGroupId = Literal["trajectory", "weather", "airspace"]
+TOOL_GROUPS: dict[McpToolGroupId, list[dict]] = {
+    "trajectory": ASTRA_TOOLS,
+    "weather": WEATHER_TOOLS,
+    "airspace": AIRSPACE_TOOLS,
+}
 
 
-def get_tools() -> list[dict]:
-    """Return the full list of tool schemas."""
-    return ALL_TOOLS
+def get_tools(
+    enabled_tool_groups: list[McpToolGroupId] | None = None,
+) -> list[dict]:
+    """Return tool schemas filtered by enabled MCP group ids."""
+    if enabled_tool_groups is None:
+        return ALL_TOOLS
+
+    return [tool for group_id in enabled_tool_groups for tool in TOOL_GROUPS[group_id]]
 
 
 # ── System prompt ─────────────────────────────────────────────────────────────
@@ -354,6 +365,7 @@ Guidelines:
 - Call astra_list_balloons and astra_list_parachutes when hardware selection is unclear.
 - Call astra_calculate_nozzle_lift before astra_run_simulation when the user gives a target ascent rate but not a nozzle lift.
 - Call astra_run_simulation to compute landing prediction and uncertainty; it pulls NOAA GFS data itself, so do not call get_winds_aloft first unless the user separately wants the wind profile.
+- If trajectory simulation tools are unavailable, ask the user to enable the Trajectory MCP in the sidebar. Do not refer to this as ASTRA in the user-facing message.
 - Lead with the overall GO / CAUTION / NO-GO recommendation.
 - Explicitly name threshold violations (e.g., "Surface wind 8.2 m/s exceeds the 7.0 m/s CAUTION threshold").
 - Report hazard_status clearly and always state that manual NOTAM/TFR verification is still required.
@@ -445,7 +457,10 @@ class LLMProvider(abc.ABC):
     def get_model(self) -> str: ...
 
     @abc.abstractmethod
-    def get_tools(self) -> list[dict]: ...
+    def get_tools(
+        self,
+        enabled_tool_groups: list[McpToolGroupId] | None = None,
+    ) -> list[dict]: ...
 
     @abc.abstractmethod
     def get_system_prompt(self) -> str: ...
@@ -463,8 +478,11 @@ class OpenAIProvider(LLMProvider):
     def get_model(self) -> str:
         return self._model
 
-    def get_tools(self) -> list[dict]:
-        return ALL_TOOLS
+    def get_tools(
+        self,
+        enabled_tool_groups: list[McpToolGroupId] | None = None,
+    ) -> list[dict]:
+        return get_tools(enabled_tool_groups)
 
     def get_system_prompt(self) -> str:
         return SYSTEM_PROMPT

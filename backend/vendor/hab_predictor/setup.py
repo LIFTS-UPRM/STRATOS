@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     scripts=['bin/astra-sim'],
     # package_data={'': ['*.dat']},
-    install_requires=["numpy", "scipy", "grequests", "six", "deap"],
+    install_requires=["numpy", "scipy", "grequests", "requests", "six", "deap", "Flask>=3.0.0,<4.0.0"],
     author='Niccolo Zapponi, Paul Chambers',
     author_email='nz1g10@soton.ac.uk, P.R.Chambers@soton.ac.uk',
 )
