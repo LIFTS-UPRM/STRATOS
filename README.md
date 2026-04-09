@@ -300,6 +300,14 @@ curl -s -X POST http://127.0.0.1:8000/chat \
   -d '{"message":"hello"}'
 ```
 
+`POST /chat` trust model:
+
+- Client-supplied `history` is treated as untrusted transcript input only.
+- The backend sanitizes prior history down to plain `role` and `content`.
+- Client-supplied prior `tool_calls` are ignored and never treated as authoritative state.
+- Response `tool_calls` are server-generated output for UI display.
+- If trusted prior tool continuity is needed later, it must come from server-owned state rather than client replay.
+
 ---
 
 ## Contributing

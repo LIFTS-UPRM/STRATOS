@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 McpToolGroupId = Literal["trajectory", "weather", "airspace"]
@@ -14,15 +14,24 @@ class ToolCallRecord(BaseModel):
 
 
 class ChatHistoryMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     role: str
     content: str
-    tool_calls: list[ToolCallRecord] = Field(default_factory=list)
 
 
 class ChatRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     message: str
     history: list[ChatHistoryMessage] = Field(default_factory=list)
     enabled_tool_groups: list[McpToolGroupId] | None = None
+
+
+class TrustedConversationState(BaseModel):
+    """Server-owned prior tool activity reconstructed from observed execution."""
+
+    tool_calls: list[ToolCallRecord] = Field(default_factory=list)
 
 
 class TrajectoryArtifactPoint(BaseModel):

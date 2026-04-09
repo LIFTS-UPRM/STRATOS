@@ -68,9 +68,15 @@ next-env.d.ts
 # OMX artifacts
 .omx/
 
+# OMC artifacts
+.omc/
+
 # Simulation Out Files
 backend/out.csv
 backend/out.csv.zip
 backend/out.json
 backend/out.kml
 backend/out.kmz
+
+# Video Maker
+Demo/

@@ -30,7 +30,6 @@ export async function sendMessage(
         history: history.map((item) => ({
           role: item.role,
           content: item.content,
-          tool_calls: item.toolCalls ?? [],
         })),
       }),
     });

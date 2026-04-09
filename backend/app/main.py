@@ -14,8 +14,8 @@ from app.schemas import (
     ChatHistoryMessage,
     ChatRequest,
     ChatResponse,
-    ToolCallRecord,
     TrajectoryArtifact,
+    ToolCallRecord,
 )
 
 
@@ -24,6 +24,7 @@ configure_logging(settings.log_level)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.app_name)
+ALLOWED_HISTORY_ROLES = frozenset({"user", "assistant"})
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,18 +47,15 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-def _serialize_history_message(message: ChatHistoryMessage) -> str:
-    content = message.content.strip()
-    if message.role != "assistant" or not message.tool_calls:
-        return content
+def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | None:
+    if message.role not in ALLOWED_HISTORY_ROLES:
+        return None
 
-    tool_context = "\n".join(
-        f"- {tool_call.name}: {json.dumps(tool_call.args, sort_keys=True, default=str)}"
-        for tool_call in message.tool_calls
-    )
+    content = message.content.strip()
     if not content:
-        return f"Previous tool calls:\n{tool_context}"
-    return f"{content}\n\nPrevious tool calls:\n{tool_context}"
+        return None
+
+    return {"role": message.role, "content": content}
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -72,16 +70,16 @@ async def chat(payload: ChatRequest) -> ChatResponse:
 
         messages: list[dict] = [{"role": "system", "content": provider.get_system_prompt()}]
         for history_message in payload.history:
-            if history_message.role not in {"user", "assistant"}:
-                continue
-            content = _serialize_history_message(history_message)
-            if content:
-                messages.append({"role": history_message.role, "content": content})
+            sanitized_message = _sanitize_history_message(history_message)
+            if sanitized_message is not None:
+                messages.append(sanitized_message)
 
         messages.append({"role": "user", "content": payload.message})
         last_tool_name = "llm"
         max_steps = 10
         seen_calls: set[tuple[str, str]] = set()
+        # Any future cross-request replay must come from server-owned
+        # TrustedConversationState, never from client-supplied history.
 
         for step in range(max_steps):
             logger.info("LLM step %d", step + 1)
