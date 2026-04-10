@@ -205,7 +205,7 @@ async def chat(payload: ChatRequest) -> ChatResponse:
 
                 except asyncio.TimeoutError:
                     logger.warning("Tool execution timed out: %s", tool_name)
-                    tool_result = json.dumps({"error": f"{tool_name} timed out after 120 seconds"})
+                    tool_result = json.dumps({"error": f"{tool_name} timed out after {timeout} seconds"})
 
                 except Exception as e:
                     logger.exception("Tool execution failed: %s", tool_name)
