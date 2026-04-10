@@ -20,6 +20,11 @@ def _configure_runtime() -> None:
         hab_app.GFS_CACHE_ROOT = Path(cache_dir).expanduser().resolve()
 
 
+def _emit_stdout_line(text: str) -> None:
+    os.write(sys.stdout.fileno(), text.encode("utf-8"))
+    os.write(sys.stdout.fileno(), b"\n")
+
+
 def _balloon_catalog_by_name() -> dict[str, dict[str, Any]]:
     return {
         item["name"]: {
@@ -97,6 +102,14 @@ def _calculate_balloon_volume(payload: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _sanitize_simulation_result(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": result.get("status", "success"),
+        "num_runs": result.get("num_runs", 0),
+        "message": "Simulation completed. Detailed output omitted from bridge response.",
+    }
+
+
 def _dispatch(tool_name: str, payload: dict[str, Any]) -> str:
     if tool_name == "astra_list_balloons":
         if payload.get("response_format", "json") == "markdown":
@@ -115,7 +128,8 @@ def _dispatch(tool_name: str, payload: dict[str, Any]) -> str:
         return json.dumps(_calculate_balloon_volume(payload), indent=2)
 
     if tool_name == "astra_run_simulation":
-        return json.dumps(hab_app.run_simulation(payload), indent=2, default=str)
+        simulation_result = hab_app.run_simulation(payload)
+        return json.dumps(_sanitize_simulation_result(simulation_result), indent=2, default=str)
 
     raise ValueError(f"Unknown tool: {tool_name}")
 
@@ -135,10 +149,10 @@ def main() -> int:
         progress_output = stdout_buffer.getvalue().strip()
         if progress_output:
             print(progress_output, file=sys.stderr)
+        _emit_stdout_line(result)
     except Exception as exc:
-        result = f"Error: {type(exc).__name__}: {exc}"
+        _emit_stdout_line(json.dumps({"status": "error", "error_type": type(exc).__name__}))
 
-    print(result)
     return 0
 
 
