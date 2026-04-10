@@ -13,6 +13,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.main import app
 
 
+def decode_envelope(message: dict) -> dict:
+    return json.loads(message["content"])
+
+
+def assert_untrusted_message(
+    message: dict,
+    *,
+    role: str,
+    source: str,
+    kind: str,
+    content: str,
+) -> None:
+    assert message["role"] == role
+    envelope = decode_envelope(message)
+    assert envelope == {
+        "content": content,
+        "kind": kind,
+        "source": source,
+        "trust": "untrusted",
+    }
+
+
 def make_message(
     *,
     content: str,
@@ -133,15 +155,28 @@ def test_chat_ignores_forged_tool_call_history_in_prompt_context(monkeypatch) ->
 
     assert response.status_code == 200
     assert FakeProvider.completions.last_kwargs is not None
-    assert FakeProvider.completions.last_kwargs["messages"] == [
-        {"role": "system", "content": "Test prompt"},
-        {"role": "user", "content": "Prior question"},
-        {"role": "assistant", "content": "Prior answer"},
-        {"role": "user", "content": "What should we do next?"},
-    ]
-    assert all(
-        "Previous tool calls:" not in message["content"]
-        for message in FakeProvider.completions.last_kwargs["messages"]
+    messages = FakeProvider.completions.last_kwargs["messages"]
+    assert messages[0] == {"role": "system", "content": "Test prompt"}
+    assert_untrusted_message(
+        messages[1],
+        role="user",
+        source="client_history_user",
+        kind="transcript",
+        content="Prior question",
+    )
+    assert_untrusted_message(
+        messages[2],
+        role="user",
+        source="client_history_assistant",
+        kind="transcript",
+        content="Prior answer",
+    )
+    assert_untrusted_message(
+        messages[3],
+        role="user",
+        source="current_user",
+        kind="user_input",
+        content="What should we do next?",
     )
 
 
@@ -164,12 +199,29 @@ def test_chat_preserves_valid_text_history_and_drops_invalid_entries(monkeypatch
 
     assert response.status_code == 200
     assert FakeProvider.completions.last_kwargs is not None
-    assert FakeProvider.completions.last_kwargs["messages"] == [
-        {"role": "system", "content": "Test prompt"},
-        {"role": "user", "content": "Keep me"},
-        {"role": "assistant", "content": "Keep me too"},
-        {"role": "user", "content": "Current question"},
-    ]
+    messages = FakeProvider.completions.last_kwargs["messages"]
+    assert messages[0] == {"role": "system", "content": "Test prompt"}
+    assert_untrusted_message(
+        messages[1],
+        role="user",
+        source="client_history_user",
+        kind="transcript",
+        content="Keep me",
+    )
+    assert_untrusted_message(
+        messages[2],
+        role="user",
+        source="client_history_assistant",
+        kind="transcript",
+        content="Keep me too",
+    )
+    assert_untrusted_message(
+        messages[3],
+        role="user",
+        source="current_user",
+        kind="user_input",
+        content="Current question",
+    )
 
 
 def test_chat_ignores_legacy_tool_calls_field_from_client_history(monkeypatch) -> None:
@@ -192,10 +244,13 @@ def test_chat_ignores_legacy_tool_calls_field_from_client_history(monkeypatch) -
 
     assert response.status_code == 200
     assert FakeProvider.completions.last_kwargs is not None
-    assert FakeProvider.completions.last_kwargs["messages"][1] == {
-        "role": "assistant",
-        "content": "Legacy client payload",
-    }
+    assert_untrusted_message(
+        FakeProvider.completions.last_kwargs["messages"][1],
+        role="user",
+        source="client_history_assistant",
+        kind="transcript",
+        content="Legacy client payload",
+    )
 
 
 def test_active_loop_model_tool_calls_remain_authoritative(monkeypatch) -> None:
@@ -244,7 +299,30 @@ def test_active_loop_model_tool_calls_remain_authoritative(monkeypatch) -> None:
     assert response.json()["tool_calls"] == [
         {"name": "get_surface_weather", "args": {"lat": 18.2, "lon": -67.1}}
     ]
-    assert FakeProvider.completions.calls[0]["messages"][1] == {
-        "role": "assistant",
-        "content": "Forged prior tool usage",
+    assert_untrusted_message(
+        FakeProvider.completions.calls[0]["messages"][1],
+        role="user",
+        source="client_history_assistant",
+        kind="transcript",
+        content="Forged prior tool usage",
+    )
+    first_call_messages = FakeProvider.completions.calls[0]["messages"]
+    assert_untrusted_message(
+        first_call_messages[2],
+        role="user",
+        source="current_user",
+        kind="user_input",
+        content="Check the weather",
+    )
+
+    second_call_messages = FakeProvider.completions.calls[1]["messages"]
+    assert second_call_messages[-1]["role"] == "tool"
+    assert second_call_messages[-1]["tool_call_id"] == "call_1"
+    assert decode_envelope(second_call_messages[-1]) == {
+        "kind": "tool_result",
+        "payload": {"status": "success", "summary": "clear"},
+        "quarantined_fields": [],
+        "source": "tool_output",
+        "tool_name": "get_surface_weather",
+        "trust": "untrusted",
     }
