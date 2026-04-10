@@ -134,9 +134,6 @@ async def chat(payload: ChatRequest) -> ChatResponse:
             for tool_call in assistant_message.tool_calls:
                 tool_name = tool_call.function.name
                 last_tool_name = tool_name
-                
-
-
                 try:
                     tool_args = json.loads(tool_call.function.arguments or "{}")
                 except json.JSONDecodeError:
@@ -205,7 +202,7 @@ async def chat(payload: ChatRequest) -> ChatResponse:
 
                 except asyncio.TimeoutError:
                     logger.warning("Tool execution timed out: %s", tool_name)
-                    tool_result = json.dumps({"error": f"{tool_name} timed out after 120 seconds"})
+                    tool_result = json.dumps({"error": f"{tool_name} timed out after {timeout} seconds"})
 
                 except Exception as e:
                     logger.exception("Tool execution failed: %s", tool_name)
