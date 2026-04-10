@@ -34,7 +34,7 @@ def test_tool_output_quarantines_instruction_like_string_leaves() -> None:
         "notes": QUARANTINED_PAYLOAD,
         "nested": {"xml": QUARANTINED_PAYLOAD},
     }
-    assert envelope["quarantined_fields"] == ["$.notes", "$.nested.xml"]
+    assert envelope["quarantined_fields"] == ["$.nested.xml", "$.notes"]
 
 
 def test_retrieved_context_helper_accepts_benign_text() -> None:

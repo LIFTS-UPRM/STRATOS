@@ -118,6 +118,7 @@ def format_tool_output_message(
         parsed_payload = raw_result
 
     sanitized_payload, quarantined_fields = _sanitize_tool_payload(parsed_payload)
+    quarantined_fields = sorted(quarantined_fields)
     return {
         "role": "tool",
         "tool_call_id": tool_call_id,
