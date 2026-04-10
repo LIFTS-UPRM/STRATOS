@@ -135,9 +135,11 @@ def main() -> int:
         progress_output = stdout_buffer.getvalue().strip()
         if progress_output:
             print(progress_output, file=sys.stderr)
-        print(result)
+        sys.stdout.write(result)
+        sys.stdout.write("\n")
     except Exception as exc:
-        print(json.dumps({"status": "error", "error_type": type(exc).__name__}))
+        sys.stdout.write(json.dumps({"status": "error", "error_type": type(exc).__name__}))
+        sys.stdout.write("\n")
 
     return 0
 
