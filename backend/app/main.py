@@ -7,6 +7,11 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.prompt_assembly import (
+    format_client_history_message,
+    format_current_user_message,
+    format_tool_output_message,
+)
 from llm import OpenAIProvider, execute_tool
 from app.config import get_settings
 from app.logging import configure_logging
@@ -72,9 +77,9 @@ async def chat(payload: ChatRequest) -> ChatResponse:
         for history_message in payload.history:
             sanitized_message = _sanitize_history_message(history_message)
             if sanitized_message is not None:
-                messages.append(sanitized_message)
+                messages.append(format_client_history_message(**sanitized_message))
 
-        messages.append({"role": "user", "content": payload.message})
+        messages.append(format_current_user_message(payload.message))
         last_tool_name = "llm"
         max_steps = 10
         seen_calls: set[tuple[str, str]] = set()
@@ -150,15 +155,19 @@ async def chat(payload: ChatRequest) -> ChatResponse:
                     logger.warning("Duplicate tool call detected: %s %s", tool_name, tool_args)
 
                     messages.append(
-                        {
-                            "role": "tool",
-                            "tool_call_id": tool_call.id,
-                            "content": json.dumps(
+                        format_tool_output_message(
+                            tool_call_id=tool_call.id,
+                            tool_name=tool_name,
+                            raw_result=json.dumps(
                                 {
-                                    "error": f"Duplicate tool call detected for {tool_name}. Do not retry with the same arguments. Provide the final answer."
+                                    "error": (
+                                        "Duplicate tool call detected for "
+                                        f"{tool_name}. Do not retry with the same arguments. "
+                                        "Provide the final answer."
+                                    )
                                 }
                             ),
-                        }
+                        )
                     )
                     continue
 
@@ -209,11 +218,11 @@ async def chat(payload: ChatRequest) -> ChatResponse:
                     tool_result = json.dumps({"error": f"{tool_name} failed: {str(e)}"})
 
                 messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tool_call.id,
-                        "content": tool_result,
-                    }
+                    format_tool_output_message(
+                        tool_call_id=tool_call.id,
+                        tool_name=tool_name,
+                        raw_result=tool_result,
+                    )
                 )
 
         return ChatResponse(
