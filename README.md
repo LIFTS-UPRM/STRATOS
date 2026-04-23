@@ -52,6 +52,8 @@ It allows users to interact with mission tools and documents through natural lan
 
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
+For practical examples and prompt patterns, see [PROMPTING_GUIDE.md](PROMPTING_GUIDE.md).
+
 **Examples of what Chat can do:**
 
 - query trajectory and weather tools  
