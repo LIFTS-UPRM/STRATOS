@@ -145,15 +145,17 @@ function TypingIndicator() {
   }, []);
 
   return (
-    <div className={styles.assistantCard}>
-      <div className={styles.assistantHeader}>
+    <div
+      className={styles.loadingShell}
+      aria-live="polite"
+      aria-label={`STRATOS AI ${LOADING_STEPS[stepIdx]}`}
+    >
+      <div className={styles.loadingHeader}>
         <span className={styles.assistantLabel}>STRATOS AI</span>
-        <span className={styles.processingBadge}>processing</span>
+        <span className={styles.loadingMicrodot} aria-hidden="true" />
+        <span className={styles.loadingMeta}>processing</span>
       </div>
       <div className={styles.loadingState}>
-        <div className={styles.scanBar}>
-          <div className={styles.scanLine} />
-        </div>
         <span key={stepIdx} className={styles.loadingStep}>
           {LOADING_STEPS[stepIdx]}
         </span>

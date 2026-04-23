@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
+import type { Mission } from "@/types/mission";
 import styles from "./Sidebar.module.css";
 
 // ─── Icons ────────────────────────────────────────────────────
@@ -36,23 +38,42 @@ function RocketIcon() {
   );
 }
 
-// ─── Data ─────────────────────────────────────────────────────
-type MissionStatus = "active" | "upcoming" | "completed";
-
-const MISSIONS: { id: string; title: string; status: MissionStatus }[] = [
-  { id: "m1", title: "ASCENT Sub-Scale",      status: "active" },
-  { id: "m2", title: "ASCENT",                status: "upcoming" },
-  { id: "m3", title: "Nexo",                  status: "completed" },
-];
+function ChevronDownIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+         stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+      {isOpen ? null : <line x1="12" y1="15" x2="12" y2="15" />}
+    </svg>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────
 interface SidebarProps {
   isOpen: boolean;
+  onNewChat?: () => void;
+  onOpenSearch?: () => void;
+  missions: Mission[];
+  activeMissionId: string;
 }
 
 export default function Sidebar({
   isOpen,
+  onNewChat,
+  onOpenSearch,
+  missions,
+  activeMissionId,
 }: SidebarProps) {
+  const [expandedMissionIds, setExpandedMissionIds] = useState<string[]>([missions[0]?.id ?? ""]);
+
+  function toggleMissionFolder(missionId: string) {
+    setExpandedMissionIds((current) =>
+      current.includes(missionId)
+        ? current.filter((id) => id !== missionId)
+        : [...current, missionId]
+    );
+  }
+
   return (
     <aside className={styles.sidebar + (isOpen ? " " + styles.open : " " + styles.closed)}>
       {/* Brand row */}
@@ -67,13 +88,23 @@ export default function Sidebar({
 
       {/* Quick actions */}
       <div className={styles.quickActions}>
-        <button className={styles.quickBtn}>
+        <button
+          className={`${styles.quickBtn} ${styles.newChatBtn}`}
+          type="button"
+          onClick={onNewChat}
+        >
           <span className={styles.quickIcon}><PencilIcon /></span>
           New chat
         </button>
-        <button className={styles.quickBtn}>
+        <button
+          className={`${styles.quickBtn} ${styles.searchQuickBtn}`}
+          type="button"
+          onClick={onOpenSearch}
+          aria-label="Search chats"
+          title="Search chats"
+          aria-haspopup="dialog"
+        >
           <span className={styles.quickIcon}><SearchIcon /></span>
-          Search chats
         </button>
       </div>
 
@@ -86,19 +117,48 @@ export default function Sidebar({
             <span className={styles.sectionLabel}>Missions</span>
           </div>
           <div className={styles.sectionBody}>
-            {MISSIONS.map((m) => (
-              <button
-                key={m.id}
-                className={
-                  styles.missionItem +
-                  (m.status === "active" ? " " + styles.missionActive : "")
-                }
-              >
-                <span className={styles.missionIcon}><RocketIcon /></span>
-                <span className={styles.missionTitle}>{m.title}</span>
-                <span className={styles.statusDot + " " + styles["status_" + m.status]} />
-              </button>
-            ))}
+            {missions.map((mission) => {
+              const isExpanded = expandedMissionIds.includes(mission.id);
+              const isActive = mission.id === activeMissionId;
+
+              return (
+                <div key={mission.id} className={styles.missionFolder}>
+                  <button
+                    className={
+                      styles.missionItem +
+                      (isActive ? " " + styles.missionActive : "")
+                    }
+                    type="button"
+                    onClick={() => toggleMissionFolder(mission.id)}
+                    aria-expanded={isExpanded}
+                  >
+                    <span className={styles.missionIcon}><RocketIcon /></span>
+                    <span className={styles.missionContent}>
+                      <span className={styles.missionTitle}>{mission.title}</span>
+                      <span className={styles.missionStatus}>{mission.status}</span>
+                    </span>
+                    <span
+                      className={
+                        styles.statusDot + " " + styles["status_" + mission.status.replace("-", "_")]
+                      }
+                    />
+                    <span
+                      className={
+                        styles.missionChevron + (isExpanded ? " " + styles.missionChevronOpen : "")
+                      }
+                    >
+                      <ChevronDownIcon isOpen={isExpanded} />
+                    </span>
+                  </button>
+
+                  {isExpanded && (
+                    <div className={styles.missionChats}>
+                      <span className={styles.noChatsText}>No chats</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
 
