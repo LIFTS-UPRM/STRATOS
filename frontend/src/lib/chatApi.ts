@@ -1,10 +1,28 @@
-import type { McpToolGroupId, Message, TrajectoryArtifact } from "@/types/chat";
+import type { Message, TrajectoryArtifact } from "@/types/chat";
 
 export interface ChatApiResponse {
   response: string;
   source: string;
   tool_calls?: Array<{ name: string; args: Record<string, unknown> }>;
   trajectory_artifact?: TrajectoryArtifact | null;
+}
+
+function getChatEndpoint(): string {
+  const configuredBase = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  if (configuredBase) {
+    return `${configuredBase.replace(/\/$/, "")}/chat`;
+  }
+
+  if (typeof window !== "undefined") {
+    const { protocol, hostname } = window.location;
+    const isLocalDevHost = hostname === "localhost" || hostname === "127.0.0.1";
+
+    if (isLocalDevHost && (protocol === "http:" || protocol === "https:")) {
+      return "http://127.0.0.1:8000/chat";
+    }
+  }
+
+  return "/api/chat";
 }
 
 /**
@@ -14,19 +32,16 @@ export interface ChatApiResponse {
 export async function sendMessage(
   message: string,
   history: Message[] = [],
-  enabledToolGroups?: McpToolGroupId[],
 ): Promise<ChatApiResponse> {
   let res: Response;
 
   try {
-    const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
-    const endpoint = base ? `${base}/chat` : "/api/chat";
+    const endpoint = getChatEndpoint();
     res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message,
-        enabled_tool_groups: enabledToolGroups,
         history: history.map((item) => ({
           role: item.role,
           content: item.content,

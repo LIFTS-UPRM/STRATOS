@@ -1,3 +1,4 @@
+import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -65,6 +66,23 @@ class DummyEnvironment(object):
 
     def load(self, progressHandler=None):
         raise RuntimeError("simulated GFS failure")
+
+
+class FakeGFSModule(object):
+    def __init__(self, cycle_dt):
+        self.cycleDateTime = cycle_dt
+
+
+class RefreshingEnvironment(DummyEnvironment):
+    def __init__(self, launch_dt, actual_cycle_dt):
+        super().__init__(launch_dt)
+        self.actual_cycle_dt = actual_cycle_dt
+        self.load_calls = 0
+
+    def load(self, progressHandler=None):
+        self.load_calls += 1
+        self._weatherLoaded = True
+        self._GFSmodule = FakeGFSModule(self.actual_cycle_dt)
 
 
 def _read_fixture(name):
@@ -225,6 +243,45 @@ def test_load_or_refresh_forecast_cache_falls_back_to_open_meteo(monkeypatch, tm
         5000.0,
         launch_dt + timedelta(minutes=30),
     ) > 0.0
+
+
+def test_forecast_cache_refreshes_when_actual_cycle_lags_latest(monkeypatch, tmp_path):
+    latest_cycle = datetime(2026, 4, 24, 18, 0)
+    older_cycle = datetime(2026, 4, 24, 12, 0)
+    launch_dt = datetime(2026, 4, 27, 14, 0)
+    environment = RefreshingEnvironment(launch_dt, latest_cycle)
+
+    monkeypatch.setattr(astra_app, "GFS_CACHE_ROOT", tmp_path)
+    monkeypatch.setattr(astra_app, "_utcnow_naive", lambda: datetime(2026, 4, 24, 19, 0))
+    monkeypatch.setattr(astra_app, "_load_cached_gfs_module", lambda module_path: FakeGFSModule(older_cycle))
+    monkeypatch.setattr(astra_app, "_prime_environment_from_gfs_module", lambda env: None)
+
+    cache_dir, metadata_path, module_path = astra_app._forecast_cache_paths(
+        launch_lat=environment.launchSiteLat,
+        launch_lon=environment.launchSiteLon,
+        launch_datetime=environment.dateAndTime,
+        force_low_res=environment.forceNonHD,
+        forecast_duration_h=environment.forecastDuration,
+    )
+    cache_dir.mkdir(parents=True)
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "latest_cycle_utc": latest_cycle.isoformat(),
+                "actual_cycle_utc": older_cycle.isoformat(),
+                "utc_offset_hours": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    module_path.write_bytes(b"cached module placeholder")
+
+    forecast = astra_app._load_or_refresh_forecast_cache(environment)
+
+    assert environment.load_calls == 1
+    assert forecast["source"] == "downloaded"
+    assert forecast["latest_cycle_utc"] == latest_cycle.isoformat()
+    assert forecast["actual_cycle_utc"] == latest_cycle.isoformat()
 
 
 def test_hardware_endpoint_returns_catalog():
@@ -421,3 +478,68 @@ def test_build_sondehub_calibration_reports_raw_vs_reference_delta():
     assert calibration["landing_delta"]["lat"] == pytest.approx(0.15)
     assert calibration["landing_delta"]["lon"] == pytest.approx(0.15)
     assert calibration["comparison"]["landing_delta_km"] > 0
+
+
+def test_build_sondehub_artifact_reference_uses_sampled_reference_points():
+    launch_dt = datetime(2026, 4, 1, 12, 0)
+    sondehub_info = {
+        "status": "compared",
+        "provider": "sondehub-tawhiri",
+        "request": {
+            "profile": "standard_profile",
+            "launch_datetime": "2026-04-01T12:00:00Z",
+            "ascent_rate": 5.0,
+            "burst_altitude": 1000.0,
+            "descent_rate": 4.5,
+        },
+        "reference": {
+            "burst": {
+                "lat": 18.25,
+                "lon": -66.85,
+                "alt_m": 1000.0,
+                "datetime": "2026-04-01T12:05:00Z",
+            },
+            "landing": {
+                "lat": 18.45,
+                "lon": -66.55,
+                "alt_m": 0.0,
+                "datetime": "2026-04-01T12:20:00Z",
+            },
+            "trajectory": [
+                {
+                    "stage": "ascent",
+                    "lat": 18.0,
+                    "lon": -67.0,
+                    "alt_m": 0.0,
+                    "datetime": "2026-04-01T12:00:00Z",
+                },
+                {
+                    "stage": "descent",
+                    "lat": 18.45,
+                    "lon": -66.55,
+                    "alt_m": 0.0,
+                    "datetime": "2026-04-01T12:20:00Z",
+                },
+            ],
+        },
+    }
+
+    reference = astra_app._build_sondehub_artifact_reference(sondehub_info, launch_dt)
+
+    assert reference["provider"] == "sondehub-tawhiri"
+    assert reference["status"] == "compared"
+    assert reference["request"]["ascent_rate"] == pytest.approx(5.0)
+    assert reference["request"]["descent_rate"] == pytest.approx(4.5)
+    assert reference["trajectory"] == [
+        {"lat": 18.0, "lon": -67.0, "alt_m": 0.0, "time_s": 0.0},
+        {"lat": 18.45, "lon": -66.55, "alt_m": 0.0, "time_s": 1200.0},
+    ]
+    assert reference["burst"]["time_s"] == 300.0
+    assert reference["landing"]["lon"] == pytest.approx(-66.55)
+
+
+def test_build_sondehub_artifact_reference_skips_missing_reference():
+    assert astra_app._build_sondehub_artifact_reference(
+        {"status": "error", "provider": "sondehub-tawhiri"},
+        datetime(2026, 4, 1, 12, 0),
+    ) is None

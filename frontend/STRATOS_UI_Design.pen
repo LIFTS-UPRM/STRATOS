@@ -1,5 +1,5 @@
 {
-  "version": "2.9",
+  "version": "2.11",
   "children": [
     {
       "type": "prompt",
@@ -321,349 +321,6 @@
               "fill": "$--sidebar-border",
               "width": "fill_container",
               "height": 1
-            },
-            {
-              "type": "frame",
-              "id": "upN8U",
-              "name": "toolsSection",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 2,
-              "padding": 8,
-              "children": [
-                {
-                  "type": "text",
-                  "id": "hDATT",
-                  "name": "toolsTitle",
-                  "fill": "$--muted-foreground",
-                  "content": "Tools",
-                  "fontFamily": "Inter",
-                  "fontSize": 10,
-                  "fontWeight": "700",
-                  "letterSpacing": 1.5
-                },
-                {
-                  "type": "frame",
-                  "id": "5zvNb",
-                  "name": "flight",
-                  "width": "fill_container",
-                  "fill": "transparent",
-                  "cornerRadius": 6,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "gap": 8,
-                  "padding": [
-                    6,
-                    8
-                  ],
-                  "justifyContent": "space_between",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "K4u9x",
-                      "name": "Item Content Left",
-                      "clip": true,
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "AnHBM",
-                          "name": "Leading Icon",
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "Z3vxP",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "map",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "dUtux",
-                          "name": "Label",
-                          "fill": "$--sidebar-foreground",
-                          "content": "Flight Planning",
-                          "lineHeight": 1.4285714285714286,
-                          "fontFamily": "Inter",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "60rxy",
-                      "name": "Item Content Right",
-                      "width": "fit_content(16)",
-                      "height": "fit_content(16)",
-                      "gap": 8,
-                      "justifyContent": "end",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "240jz",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Trailing Icon",
-                          "enabled": false,
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "V7j4n",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "chevron-right",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "kdQo0",
-                  "name": "weather",
-                  "width": "fill_container",
-                  "fill": "transparent",
-                  "cornerRadius": 6,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "gap": 8,
-                  "padding": [
-                    6,
-                    8
-                  ],
-                  "justifyContent": "space_between",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "q4NSQ",
-                      "name": "Item Content Left",
-                      "clip": true,
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RY1ot",
-                          "name": "Leading Icon",
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "JTaVw",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "cloud",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "zj0Wm",
-                          "name": "Label",
-                          "fill": "$--sidebar-foreground",
-                          "content": "Weather Data",
-                          "lineHeight": 1.4285714285714286,
-                          "fontFamily": "Inter",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "lr9E5",
-                      "name": "Item Content Right",
-                      "width": "fit_content(16)",
-                      "height": "fit_content(16)",
-                      "gap": 8,
-                      "justifyContent": "end",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "of8cn",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Trailing Icon",
-                          "enabled": false,
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "SO9WN",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "chevron-right",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "6KMKk",
-                  "name": "telemetry",
-                  "width": "fill_container",
-                  "fill": "transparent",
-                  "cornerRadius": 6,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "gap": 8,
-                  "padding": [
-                    6,
-                    8
-                  ],
-                  "justifyContent": "space_between",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "KYfkp",
-                      "name": "Item Content Left",
-                      "clip": true,
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "TJQU7",
-                          "name": "Leading Icon",
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "sQrX3",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "activity",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "2t9jm",
-                          "name": "Label",
-                          "fill": "$--sidebar-foreground",
-                          "content": "Telemetry",
-                          "lineHeight": 1.4285714285714286,
-                          "fontFamily": "Inter",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "ZywKW",
-                      "name": "Item Content Right",
-                      "width": "fit_content(16)",
-                      "height": "fit_content(16)",
-                      "gap": 8,
-                      "justifyContent": "end",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "wX3wf",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Trailing Icon",
-                          "enabled": false,
-                          "width": 16,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "icon_font",
-                              "id": "7y07m",
-                              "x": 0,
-                              "y": 0,
-                              "width": 16,
-                              "height": 16,
-                              "iconFontName": "chevron-right",
-                              "iconFontFamily": "lucide",
-                              "fill": "$--sidebar-foreground"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
             },
             {
               "type": "rectangle",
@@ -2007,7 +1664,8 @@
                           "fill": "$--muted-foreground",
                           "content": "Pre-Flight",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -2029,7 +1687,8 @@
                           "fill": "$--muted-foreground",
                           "content": "Mission Control",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -2051,7 +1710,8 @@
                           "fill": "$--muted-foreground",
                           "content": "Post-Flight",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -3155,6 +2815,3443 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "sSI0u",
+      "x": 3053,
+      "y": 2600,
+      "name": "stratos-preflight",
+      "theme": {
+        "Mode": "Dark",
+        "Accent": "Blue"
+      },
+      "clip": true,
+      "width": 1440,
+      "height": 1000,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Dbz4Z",
+          "name": "topBar",
+          "width": "fill_container",
+          "height": 56,
+          "fill": "$--sidebar",
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$--sidebar-border"
+          },
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "IinQY",
+              "name": "brandArea",
+              "gap": 24,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SNahH",
+                  "name": "logo",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "AVkOC",
+                      "name": "logoIcon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "wind",
+                      "iconFontFamily": "lucide",
+                      "fill": "$--primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "udU7m",
+                      "name": "logoText",
+                      "fill": "$--foreground",
+                      "content": "STRATOS",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                      "letterSpacing": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "id": "efRA7",
+                  "name": "dividerV",
+                  "fill": "$--border",
+                  "width": 1,
+                  "height": 20
+                },
+                {
+                  "type": "frame",
+                  "id": "x5auj",
+                  "name": "navItems",
+                  "gap": 2,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Py2UQ",
+                      "name": "navChat",
+                      "cornerRadius": 6,
+                      "gap": 6,
+                      "padding": [
+                        6,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "Bb6iL",
+                          "name": "navChatIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "message-square",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MiwVT",
+                          "name": "navChatLabel",
+                          "fill": "$--muted-foreground",
+                          "content": "Chat",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "itHFV",
+                      "name": "navPreflight",
+                      "fill": "$--primary",
+                      "cornerRadius": 6,
+                      "gap": 6,
+                      "padding": [
+                        6,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "vK8eR",
+                          "name": "navPreflightIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "clipboard-check",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--primary-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "eT55s",
+                          "name": "navPreflightLabel",
+                          "fill": "$--primary-foreground",
+                          "content": "Pre-Flight",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "01OEj",
+                      "name": "navMission",
+                      "cornerRadius": 6,
+                      "gap": 6,
+                      "padding": [
+                        6,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "6qM0k",
+                          "name": "navMissionIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "radio-tower",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "gqo5v",
+                          "name": "navMissionLabel",
+                          "fill": "$--muted-foreground",
+                          "content": "Mission Control",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wN4oC",
+                      "name": "navPost",
+                      "cornerRadius": 6,
+                      "gap": 6,
+                      "padding": [
+                        6,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "Fu5dq",
+                          "name": "navPostIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "file-bar-chart",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "8FBrt",
+                          "name": "navPostLabel",
+                          "fill": "$--muted-foreground",
+                          "content": "Post-Flight",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zNaJT",
+              "name": "headerRight",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "USrzU",
+                  "name": "missionLabel",
+                  "fill": "$--foreground",
+                  "content": "HAB-STRATOS-07",
+                  "fontFamily": "Geist Mono",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "ZPBS5",
+                  "name": "dividerV2",
+                  "fill": "$--border",
+                  "width": 1,
+                  "height": 20
+                },
+                {
+                  "type": "frame",
+                  "id": "whVfc",
+                  "name": "readinessBadge",
+                  "fill": "#f59e0b26",
+                  "cornerRadius": 20,
+                  "gap": 6,
+                  "padding": [
+                    4,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "90CjL",
+                      "name": "readinessDot",
+                      "fill": "#f59e0b",
+                      "width": 6,
+                      "height": 6
+                    },
+                    {
+                      "type": "text",
+                      "id": "3aMHF",
+                      "name": "readinessLabel",
+                      "fill": "#f59e0b",
+                      "content": "2 / 7 STAGES",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 10,
+                      "fontWeight": "700",
+                      "letterSpacing": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VFnnF",
+                  "name": "launchTime",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "JfBPg",
+                      "name": "clockIcon",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "clock",
+                      "iconFontFamily": "lucide",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "swHJL",
+                      "name": "launchTimeLabel",
+                      "fill": "$--muted-foreground",
+                      "content": "T-04:32:00",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "0cXTg",
+          "name": "body",
+          "width": "fill_container",
+          "height": "fill_container",
+          "children": [
+            {
+              "type": "frame",
+              "id": "cOx50",
+              "name": "leftPanel",
+              "width": 280,
+              "height": "fill_container",
+              "fill": "$--sidebar",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "right": 1
+                },
+                "fill": "$--sidebar-border"
+              },
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pGYJ1",
+                  "name": "missionSummary",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--sidebar-border"
+                  },
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "2o5lg",
+                      "name": "missionSummaryTitle",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "kBXMV",
+                          "name": "missionTitleText",
+                          "fill": "$--muted-foreground",
+                          "content": "Mission Summary",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "JOyW1",
+                          "name": "missionIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "info",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JeGpQ",
+                      "name": "missionDetails",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "u9seJ",
+                          "name": "missionRow1",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ABJ5Q",
+                              "name": "missionRow1Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Mission",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "UcSC4",
+                              "name": "missionRow1Value",
+                              "fill": "$--foreground",
+                              "content": "HAB-STRATOS-07",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DuNjq",
+                          "name": "missionRow2",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qUHxa",
+                              "name": "missionRow2Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Launch Site",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "nx51w",
+                              "name": "missionRow2Value",
+                              "fill": "$--foreground",
+                              "content": "Roswell, NM",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "1qPkk",
+                          "name": "missionRow3",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "2I6Rf",
+                              "name": "missionRow3Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Launch Time",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TnzST",
+                              "name": "missionRow3Value",
+                              "fill": "$--foreground",
+                              "content": "09:00 MDT",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aYHPo",
+                          "name": "missionRow4",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Lz5bn",
+                              "name": "missionRow4Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Target Alt.",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "GIeqw",
+                              "name": "missionRow4Value",
+                              "fill": "$--foreground",
+                              "content": "30,000 m",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JnoFc",
+                          "name": "missionRow5",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZgLca",
+                              "name": "missionRow5Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Payload",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "urRGR",
+                              "name": "missionRow5Value",
+                              "fill": "$--foreground",
+                              "content": "ATMOS-CAM v2",
+                              "fontFamily": "Geist",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qZhW9",
+                      "name": "aiContextChip",
+                      "width": "fill_container",
+                      "fill": "#1d4ed826",
+                      "cornerRadius": 6,
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "GnykI",
+                          "name": "aiChipIcon",
+                          "width": 12,
+                          "height": 12,
+                          "iconFontName": "sparkles",
+                          "iconFontFamily": "lucide",
+                          "fill": "#60a5fa"
+                        },
+                        {
+                          "type": "text",
+                          "id": "tfCbA",
+                          "name": "aiChipText",
+                          "fill": "#60a5fa",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "AI loaded 3 location insights from previous chats",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "7QKro",
+                  "name": "stagesSection",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": [
+                    12,
+                    12,
+                    0,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jNKlw",
+                      "name": "stagesHeader",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        8,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "hJkco",
+                          "name": "stagesHeaderLabel",
+                          "fill": "$--muted-foreground",
+                          "content": "CHECKLIST STAGES",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "QpB71",
+                          "name": "stagesHeaderProgress",
+                          "fill": "$--muted-foreground",
+                          "content": "2 of 7",
+                          "fontFamily": "Geist Mono",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SL4D5",
+                      "name": "stage1",
+                      "width": "fill_container",
+                      "fill": "#22c55e1a",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "KmttL",
+                          "name": "stage1Check",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "#22c55e",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "mKPcv",
+                              "name": "stage1CheckIcon",
+                              "width": 11,
+                              "height": 11,
+                              "iconFontName": "check",
+                              "iconFontFamily": "lucide",
+                              "fill": "#ffffff"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xe8jB",
+                          "name": "stage1Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "FlVTu",
+                              "name": "stage1Label",
+                              "fill": "#22c55e",
+                              "content": "Mission Review",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "SOWW3",
+                              "name": "stage1Sub",
+                              "fill": "#22c55e99",
+                              "content": "4 / 4 complete",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NVCnm",
+                      "name": "stage2",
+                      "width": "fill_container",
+                      "fill": "#1d4ed81a",
+                      "cornerRadius": 6,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#1d4ed8"
+                      },
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "nKuPW",
+                          "name": "stage2Num",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "#1d4ed8",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WEZks",
+                              "name": "stage2NumText",
+                              "fill": "#ffffff",
+                              "content": "2",
+                              "fontFamily": "Geist",
+                              "fontSize": 10,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "F9uNN",
+                          "name": "stage2Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "iptLk",
+                              "name": "stage2Label",
+                              "fill": "$--foreground",
+                              "content": "Launch Site Validation",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "arzCK",
+                              "name": "stage2Sub",
+                              "fill": "#60a5fa",
+                              "content": "2 / 5 complete · Active",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2i9CQ",
+                      "name": "stage3",
+                      "width": "fill_container",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "6xAxj",
+                          "name": "stage3Lock",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$--muted",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "H3cKs",
+                              "name": "stage3LockIcon",
+                              "width": 10,
+                              "height": 10,
+                              "iconFontName": "lock",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--muted-foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZUMe6",
+                          "name": "stage3Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "niigv",
+                              "name": "stage3Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Payload Readiness",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ZZeLL",
+                              "name": "stage3Sub",
+                              "opacity": 0.5,
+                              "fill": "$--muted-foreground",
+                              "content": "Locked · 6 items",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "e3NAk",
+                      "name": "stage4",
+                      "width": "fill_container",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "85fC3",
+                          "name": "stage4Lock",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$--muted",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "YlYBp",
+                              "name": "stage4LockIcon",
+                              "width": 10,
+                              "height": 10,
+                              "iconFontName": "lock",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--muted-foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xrGiJ",
+                          "name": "stage4Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Y1QHc",
+                              "name": "stage4Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Communications",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "EDvXG",
+                              "name": "stage4Sub",
+                              "opacity": 0.5,
+                              "fill": "$--muted-foreground",
+                              "content": "Locked · 5 items",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Wn9WC",
+                      "name": "stage5",
+                      "width": "fill_container",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "9KsiD",
+                          "name": "stage5Lock",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$--muted",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "w7gnD",
+                              "name": "stage5LockIcon",
+                              "width": 10,
+                              "height": 10,
+                              "iconFontName": "lock",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--muted-foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xTEKl",
+                          "name": "stage5Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "aluTV",
+                              "name": "stage5Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Weather Assessment",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "9Gu5l",
+                              "name": "stage5Sub",
+                              "opacity": 0.5,
+                              "fill": "$--muted-foreground",
+                              "content": "Locked · 7 items",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RzaGN",
+                      "name": "stage6",
+                      "width": "fill_container",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Yazkq",
+                          "name": "stage6Lock",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$--muted",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "rhD0e",
+                              "name": "stage6LockIcon",
+                              "width": 10,
+                              "height": 10,
+                              "iconFontName": "lock",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--muted-foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PlINV",
+                          "name": "stage6Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7cW6Y",
+                              "name": "stage6Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Safety Checks",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Xji6j",
+                              "name": "stage6Sub",
+                              "opacity": 0.5,
+                              "fill": "$--muted-foreground",
+                              "content": "Locked · 8 items",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "phwp1",
+                      "name": "stage7",
+                      "width": "fill_container",
+                      "fill": "$--muted",
+                      "cornerRadius": 6,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "6F9bd",
+                          "name": "stage7Flag",
+                          "opacity": 0.3,
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$--muted-foreground",
+                          "cornerRadius": 9,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "Wq7x6",
+                              "name": "stage7FlagIcon",
+                              "width": 10,
+                              "height": 10,
+                              "iconFontName": "flag",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "gzzgN",
+                          "name": "stage7Content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZmGgn",
+                              "name": "stage7Label",
+                              "fill": "$--muted-foreground",
+                              "content": "Go / No-Go Decision",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "0vhY4",
+                              "name": "stage7Sub",
+                              "opacity": 0.5,
+                              "fill": "$--muted-foreground",
+                              "content": "Final · Requires all stages",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yJsrk",
+              "name": "centerPanel",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$--background",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Hb2GR",
+                  "name": "centerHeader",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    20,
+                    24,
+                    0,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MlXKz",
+                      "name": "stageBreadcrumb",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "4TBBa",
+                          "name": "breadcrumbText",
+                          "fill": "$--muted-foreground",
+                          "content": "Pre-Flight",
+                          "fontFamily": "Geist",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "bzRBK",
+                          "name": "breadcrumbArrow",
+                          "width": 12,
+                          "height": 12,
+                          "iconFontName": "chevron-right",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "cpZ5O",
+                          "name": "breadcrumbActive",
+                          "fill": "$--foreground",
+                          "content": "Stage 2: Launch Site Validation",
+                          "fontFamily": "Geist",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UUWoo",
+                      "name": "stageHeaderRow",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Xyda6",
+                          "name": "stageTitle",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zU5Yr",
+                              "name": "stageTitleText",
+                              "fill": "$--foreground",
+                              "content": "Launch Site Validation",
+                              "fontFamily": "Geist",
+                              "fontSize": 22,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "wxrzI",
+                              "name": "stageTitleSub",
+                              "fill": "$--muted-foreground",
+                              "content": "Confirm launch location, perimeter, and ground conditions.",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Wgr2O",
+                          "name": "stageActions",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "5xWg9",
+                              "name": "aiReviewBtn",
+                              "fill": "#1d4ed826",
+                              "cornerRadius": 6,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#1d4ed8"
+                              },
+                              "gap": 6,
+                              "padding": [
+                                8,
+                                14
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "Egz8X",
+                                  "name": "aiReviewIcon",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "sparkles",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#60a5fa"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "P1VDV",
+                                  "name": "aiReviewLabel",
+                                  "fill": "#60a5fa",
+                                  "content": "AI Review Stage",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uYPeG",
+                      "name": "stageProgressBar",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "KKZTQ",
+                          "name": "progressBarTrack",
+                          "width": "fill_container",
+                          "height": 4,
+                          "fill": "$--muted",
+                          "cornerRadius": 2,
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "CJXpB",
+                              "x": 0,
+                              "y": 0,
+                              "name": "progressBarFill",
+                              "width": 200,
+                              "height": 4,
+                              "fill": "#1d4ed8",
+                              "cornerRadius": 2
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "CVaH1",
+                          "name": "progressBarLabel",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "6S3Zc",
+                              "name": "progressLabelLeft",
+                              "fill": "$--muted-foreground",
+                              "content": "2 of 5 items complete",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "2areN",
+                              "name": "progressLabelRight",
+                              "fill": "$--muted-foreground",
+                              "content": "40%",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "SEZux",
+                      "name": "dividerCenter",
+                      "fill": "$--border",
+                      "width": "fill_container",
+                      "height": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "oxLQ5",
+                  "name": "checklistArea",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "hDIHv",
+                      "name": "item1",
+                      "width": "fill_container",
+                      "fill": "$--card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#22c55e40"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "iJf7v",
+                          "name": "item1Header",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "FZQpE",
+                              "name": "item1Checkbox",
+                              "width": 20,
+                              "height": 20,
+                              "fill": "#22c55e",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "q4DAL",
+                                  "name": "item1CheckIcon",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#ffffff"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ZwI7A",
+                              "name": "item1Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Ztnvo",
+                                  "name": "item1Title",
+                                  "fill": "#22c55e",
+                                  "content": "Confirm launch coordinates recorded",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "j5TIg",
+                                  "name": "item1Detail",
+                                  "fill": "#22c55e99",
+                                  "content": "33.3942° N, 104.5230° W — Roswell Municipal Airport perimeter",
+                                  "fontFamily": "Geist Mono",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Wd973",
+                              "name": "item1Status",
+                              "fill": "#22c55e1a",
+                              "cornerRadius": 4,
+                              "padding": [
+                                3,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "vSSHU",
+                                  "name": "item1StatusText",
+                                  "fill": "#22c55e",
+                                  "content": "Complete",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fwTBq",
+                      "name": "item2",
+                      "width": "fill_container",
+                      "fill": "$--card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#22c55e40"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "AsS18",
+                          "name": "item2Header",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "zSJNJ",
+                              "name": "item2Checkbox",
+                              "width": 20,
+                              "height": 20,
+                              "fill": "#22c55e",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "jQr84",
+                                  "name": "item2CheckIcon",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#ffffff"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "lXDhR",
+                              "name": "item2Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "dBkxC",
+                                  "name": "item2Title",
+                                  "fill": "#22c55e",
+                                  "content": "Site perimeter clear of personnel and obstructions",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "a6PSG",
+                                  "name": "item2Detail",
+                                  "fill": "#22c55e99",
+                                  "content": "150m radius clear zone confirmed at 07:45 MDT",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "UjVxM",
+                              "name": "item2Status",
+                              "fill": "#22c55e1a",
+                              "cornerRadius": 4,
+                              "padding": [
+                                3,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "aLqaV",
+                                  "name": "item2StatusText",
+                                  "fill": "#22c55e",
+                                  "content": "Complete",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "w0bcd",
+                      "name": "item3",
+                      "width": "fill_container",
+                      "fill": "$--card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#1d4ed880"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "WFKcU",
+                          "name": "item3Header",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "J9C5R",
+                              "name": "item3Checkbox",
+                              "width": 20,
+                              "height": 20,
+                              "fill": "$--muted",
+                              "cornerRadius": 10,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 2,
+                                "fill": "#1d4ed8"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "jV3V9",
+                                  "name": "item3CheckDot",
+                                  "fill": "#1d4ed8",
+                                  "width": 8,
+                                  "height": 8
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JMGCW",
+                              "name": "item3Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "LR57K",
+                                  "name": "item3Title",
+                                  "fill": "$--foreground",
+                                  "content": "Ground wind speed within limits",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "vrJMN",
+                                  "name": "item3Detail",
+                                  "fill": "$--muted-foreground",
+                                  "content": "Requires ≤ 15 mph surface winds · Currently measuring",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "nRhPX",
+                              "name": "item3StatusRow",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "VuQmz",
+                                  "name": "item3AIChip",
+                                  "fill": "#1d4ed81a",
+                                  "cornerRadius": 4,
+                                  "gap": 4,
+                                  "padding": [
+                                    3,
+                                    8
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon_font",
+                                      "id": "sNURk",
+                                      "name": "item3AIIcon",
+                                      "width": 11,
+                                      "height": 11,
+                                      "iconFontName": "sparkles",
+                                      "iconFontFamily": "lucide",
+                                      "fill": "#60a5fa"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "IPioH",
+                                      "name": "item3AIText",
+                                      "fill": "#60a5fa",
+                                      "content": "AI Validating",
+                                      "fontFamily": "Geist",
+                                      "fontSize": 11,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "4i9Sz",
+                          "name": "item3NoteArea",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            16,
+                            14,
+                            52
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "B4GHi",
+                              "name": "item3AINote",
+                              "width": "fill_container",
+                              "fill": "#1d4ed814",
+                              "cornerRadius": 6,
+                              "gap": 8,
+                              "padding": [
+                                10,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "A0LAy",
+                                  "name": "item3AIIconNote",
+                                  "width": 13,
+                                  "height": 13,
+                                  "iconFontName": "sparkles",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#60a5fa"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "q1N8G",
+                                  "name": "item3AIMessage",
+                                  "fill": "#93c5fd",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Surface winds currently 11 mph from 240°. Within limits. Gusts recorded at 14 mph — monitoring. Historical data for Roswell in April shows gusty afternoons; consider early launch window.",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "oJlAi",
+                              "name": "item3NoteInput",
+                              "width": "fill_container",
+                              "height": 32,
+                              "fill": "$--muted",
+                              "cornerRadius": 6,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$--border"
+                              },
+                              "padding": [
+                                0,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "1iwFe",
+                                  "name": "item3NotePlaceholder",
+                                  "fill": "$--muted-foreground",
+                                  "content": "Add note (optional)…",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "CN4Od",
+                      "name": "item4",
+                      "width": "fill_container",
+                      "fill": "$--card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "UVfhd",
+                          "name": "item4Header",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Yq8bQ",
+                              "name": "item4Checkbox",
+                              "width": 20,
+                              "height": 20,
+                              "fill": "$--muted",
+                              "cornerRadius": 10,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 2,
+                                "fill": "$--border"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "MsmQn",
+                              "name": "item4Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "roCmm",
+                                  "name": "item4Title",
+                                  "fill": "$--foreground",
+                                  "content": "Surface pressure logged from launch site",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ndso4",
+                                  "name": "item4Detail",
+                                  "fill": "$--muted-foreground",
+                                  "content": "Record barometric pressure for ascent rate calculation",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "uBeHm",
+                              "name": "item4Status",
+                              "fill": "$--muted",
+                              "cornerRadius": 4,
+                              "padding": [
+                                3,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "plUcq",
+                                  "name": "item4StatusText",
+                                  "fill": "$--muted-foreground",
+                                  "content": "Pending",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "53RCq",
+                      "name": "item5",
+                      "width": "fill_container",
+                      "fill": "#ef444408",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#ef444440"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "7O3B0",
+                          "name": "item5Header",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "jW8aA",
+                              "name": "item5Checkbox",
+                              "width": 20,
+                              "height": 20,
+                              "fill": "$--muted",
+                              "cornerRadius": 10,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 2,
+                                "fill": "$--border"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "GbAI1",
+                                  "name": "item5BlockIcon",
+                                  "width": 10,
+                                  "height": 10,
+                                  "iconFontName": "x",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$--muted-foreground"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "vYAp1",
+                              "name": "item5Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kro2z",
+                                  "name": "item5Title",
+                                  "fill": "$--foreground",
+                                  "content": "FAA authorization confirmed for launch site",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "L41Fd",
+                                  "name": "item5Detail",
+                                  "fill": "#ef4444",
+                                  "content": "Required before marking stage complete",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "LlB8z",
+                              "name": "item5Status",
+                              "fill": "#ef44441a",
+                              "cornerRadius": 4,
+                              "gap": 4,
+                              "padding": [
+                                3,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "yC8AP",
+                                  "name": "item5BlockedIcon",
+                                  "width": 11,
+                                  "height": 11,
+                                  "iconFontName": "triangle-alert",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#ef4444"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ci1rd",
+                                  "name": "item5StatusText",
+                                  "fill": "#ef4444",
+                                  "content": "Blocked",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HBilq",
+                          "name": "item5AIWarning",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "padding": [
+                            10,
+                            12,
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "NXM1t",
+                              "name": "item5AIWarningInner",
+                              "width": "fill_container",
+                              "fill": "#ef44441a",
+                              "cornerRadius": 6,
+                              "gap": 8,
+                              "padding": [
+                                10,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "3CsfZ",
+                                  "name": "item5AIWarnIcon",
+                                  "width": 13,
+                                  "height": 13,
+                                  "iconFontName": "triangle-alert",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#ef4444"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "dgXm9",
+                                  "name": "item5AIWarnText",
+                                  "fill": "#fca5a5",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "AI BLOCK: FAA authorization document not uploaded. This item cannot be marked complete until the authorization file is attached or confirmation number entered. Cannot advance to Stage 3 without this.",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "agQXN",
+                  "name": "stageFooter",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "top": 1
+                    },
+                    "fill": "$--border"
+                  },
+                  "padding": [
+                    14,
+                    24
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "JuwqD",
+                      "name": "footerLeft",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "A10EX",
+                          "name": "footerWarningIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "triangle-alert",
+                          "iconFontFamily": "lucide",
+                          "fill": "#f59e0b"
+                        },
+                        {
+                          "type": "text",
+                          "id": "O0Stm",
+                          "name": "footerWarningText",
+                          "fill": "#f59e0b",
+                          "content": "1 item blocked · Stage cannot be completed",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "I6L27",
+                      "name": "footerRight",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3s1Fi",
+                          "name": "prevStageBtn",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "gap": 6,
+                          "padding": [
+                            9,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "R4bOy",
+                              "name": "prevIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "chevron-left",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--muted-foreground"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ILgqU",
+                              "name": "prevLabel",
+                              "fill": "$--muted-foreground",
+                              "content": "Mission Review",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ylfSh",
+                          "name": "nextStageBtn",
+                          "opacity": 0.4,
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "gap": 6,
+                          "padding": [
+                            9,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ldAbW",
+                              "name": "nextLabel",
+                              "fill": "$--foreground",
+                              "content": "Payload Readiness",
+                              "fontFamily": "Geist",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "keTFz",
+                              "name": "nextIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "chevron-right",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--foreground"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "93MoB",
+                              "name": "lockMsg",
+                              "width": 13,
+                              "height": 13,
+                              "iconFontName": "lock",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--foreground"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gxmkl",
+              "name": "rightPanel",
+              "width": 360,
+              "height": "fill_container",
+              "fill": "$--sidebar",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "left": 1
+                },
+                "fill": "$--sidebar-border"
+              },
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "M8YST",
+                  "name": "rightHeader",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--sidebar-border"
+                  },
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "pewB6",
+                      "name": "rightHeaderLabel",
+                      "fill": "$--muted-foreground",
+                      "content": "ENVIRONMENT & AIRSPACE",
+                      "fontFamily": "Geist",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2msgj",
+                      "name": "rightHeaderRefresh",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "FS07P",
+                          "name": "refreshIcon",
+                          "width": 12,
+                          "height": 12,
+                          "iconFontName": "refresh-cw",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "F0Yk4",
+                          "name": "refreshLabel",
+                          "fill": "#22c55e",
+                          "content": "Live",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "9kU4d",
+                  "name": "weatherCard",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--sidebar-border"
+                  },
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "t45sd",
+                      "name": "weatherCardTitle",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lSf9u",
+                          "name": "weatherTitleText",
+                          "fill": "$--foreground",
+                          "content": "Surface Conditions",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "5VgbJ",
+                          "name": "weatherLocation",
+                          "fill": "$--muted-foreground",
+                          "content": "Roswell, NM",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QBR6q",
+                      "name": "weatherMetrics",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "rJwO0",
+                          "name": "windMetric",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VkkBD",
+                              "name": "windLabel",
+                              "fill": "$--muted-foreground",
+                              "content": "WIND",
+                              "fontFamily": "Geist",
+                              "fontSize": 10,
+                              "fontWeight": "600",
+                              "letterSpacing": 1
+                            },
+                            {
+                              "type": "text",
+                              "id": "iXAWB",
+                              "name": "windValue",
+                              "fill": "$--foreground",
+                              "content": "11 mph",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 18,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "J90yt",
+                              "name": "windDir",
+                              "fill": "$--muted-foreground",
+                              "content": "240° SW",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "2i3N4",
+                          "name": "tempMetric",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xLISz",
+                              "name": "tempLabel",
+                              "fill": "$--muted-foreground",
+                              "content": "TEMP",
+                              "fontFamily": "Geist",
+                              "fontSize": 10,
+                              "fontWeight": "600",
+                              "letterSpacing": 1
+                            },
+                            {
+                              "type": "text",
+                              "id": "E8A0z",
+                              "name": "tempValue",
+                              "fill": "$--foreground",
+                              "content": "18°C",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 18,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "1DthN",
+                              "name": "tempSub",
+                              "fill": "$--muted-foreground",
+                              "content": "64°F",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "yVEye",
+                          "name": "pressMetric",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zngx9",
+                              "name": "pressLabel",
+                              "fill": "$--muted-foreground",
+                              "content": "PRESSURE",
+                              "fontFamily": "Geist",
+                              "fontSize": 10,
+                              "fontWeight": "600",
+                              "letterSpacing": 1
+                            },
+                            {
+                              "type": "text",
+                              "id": "3ay2N",
+                              "name": "pressValue",
+                              "fill": "$--foreground",
+                              "content": "870",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 18,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "lrU1W",
+                              "name": "pressSub",
+                              "fill": "$--muted-foreground",
+                              "content": "hPa",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "9qVeT",
+                  "name": "forecastCard",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--sidebar-border"
+                  },
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "FcHH8",
+                      "name": "forecastTitle",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "7jz7V",
+                          "name": "forecastTitleText",
+                          "fill": "$--foreground",
+                          "content": "Launch Window Forecast",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "GhGMF",
+                          "name": "forecastTime",
+                          "fill": "$--muted-foreground",
+                          "content": "09:00–11:00 MDT",
+                          "fontFamily": "Geist Mono",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "KHPPB",
+                      "name": "forecastRows",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "I1hK3",
+                          "name": "fRow1",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "TBTsC",
+                              "name": "fRow1Label",
+                              "fill": "$--muted-foreground",
+                              "content": "09:00",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "N1vbN",
+                              "name": "fRow1Bar",
+                              "width": 120,
+                              "height": 8,
+                              "fill": "$--muted",
+                              "cornerRadius": 4,
+                              "layout": "none",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "oZbuI",
+                                  "x": 0,
+                                  "y": 0,
+                                  "name": "fRow1Fill",
+                                  "width": 30,
+                                  "height": 8,
+                                  "fill": "#22c55e",
+                                  "cornerRadius": 4
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Po5md",
+                              "name": "fRow1Value",
+                              "fill": "#22c55e",
+                              "content": "8 mph · Go",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Knj0X",
+                          "name": "fRow2",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "txz3G",
+                              "name": "fRow2Label",
+                              "fill": "$--muted-foreground",
+                              "content": "09:30",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wW8B7",
+                              "name": "fRow2Bar",
+                              "width": 120,
+                              "height": 8,
+                              "fill": "$--muted",
+                              "cornerRadius": 4,
+                              "layout": "none",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "f42fu",
+                                  "x": 0,
+                                  "y": 0,
+                                  "name": "fRow2Fill",
+                                  "width": 44,
+                                  "height": 8,
+                                  "fill": "#22c55e",
+                                  "cornerRadius": 4
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "rOZmu",
+                              "name": "fRow2Value",
+                              "fill": "#22c55e",
+                              "content": "11 mph · Go",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "irFuj",
+                          "name": "fRow3",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zrleC",
+                              "name": "fRow3Label",
+                              "fill": "$--muted-foreground",
+                              "content": "10:00",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wgBjq",
+                              "name": "fRow3Bar",
+                              "width": 120,
+                              "height": 8,
+                              "fill": "$--muted",
+                              "cornerRadius": 4,
+                              "layout": "none",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "7aKlA",
+                                  "x": 0,
+                                  "y": 0,
+                                  "name": "fRow3Fill",
+                                  "width": 72,
+                                  "height": 8,
+                                  "fill": "#f59e0b",
+                                  "cornerRadius": 4
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "RyYhT",
+                              "name": "fRow3Value",
+                              "fill": "#f59e0b",
+                              "content": "18 mph · Caution",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "nPw3v",
+                          "name": "fRow4",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kgHbL",
+                              "name": "fRow4Label",
+                              "fill": "$--muted-foreground",
+                              "content": "10:30",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "74j5U",
+                              "name": "fRow4Bar",
+                              "width": 120,
+                              "height": 8,
+                              "fill": "$--muted",
+                              "cornerRadius": 4,
+                              "layout": "none",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "0dOA3",
+                                  "x": 0,
+                                  "y": 0,
+                                  "name": "fRow4Fill",
+                                  "width": 96,
+                                  "height": 8,
+                                  "fill": "#ef4444",
+                                  "cornerRadius": 4
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "7gnxN",
+                              "name": "fRow4Value",
+                              "fill": "#ef4444",
+                              "content": "24 mph · No-Go",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FOagB",
+                  "name": "altProfile",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--sidebar-border"
+                  },
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "U8hRW",
+                      "name": "altProfileTitle",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "2UhXT",
+                          "name": "altProfileTitleText",
+                          "fill": "$--foreground",
+                          "content": "Vertical Atmosphere",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "dctgW",
+                          "name": "altProfileUnit",
+                          "fill": "$--muted-foreground",
+                          "content": "Wind · Temp · Status",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "29s3w",
+                      "name": "altRows",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ct2ak",
+                          "name": "altRow1",
+                          "width": "fill_container",
+                          "fill": "#22c55e1a",
+                          "cornerRadius": 4,
+                          "padding": [
+                            6,
+                            8
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "LiFzl",
+                              "name": "altRow1Alt",
+                              "fill": "#22c55e",
+                              "content": "0–3 km",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "v7VJ7",
+                              "name": "altRow1Wind",
+                              "fill": "#22c55e",
+                              "content": "11 mph",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "tiHC3",
+                              "name": "altRow1Temp",
+                              "fill": "#22c55e",
+                              "content": "18°C",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Q74Dp",
+                              "name": "altRow1Status",
+                              "fill": "#22c55e",
+                              "cornerRadius": 3,
+                              "padding": [
+                                2,
+                                6
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gc7pL",
+                                  "name": "altRow1StatusText",
+                                  "fill": "#000000",
+                                  "content": "GO",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 10,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZPfq5",
+                          "name": "altRow2",
+                          "width": "fill_container",
+                          "fill": "#f59e0b1a",
+                          "cornerRadius": 4,
+                          "padding": [
+                            6,
+                            8
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Xmpm6",
+                              "name": "altRow2Alt",
+                              "fill": "#f59e0b",
+                              "content": "3–10 km",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TZOml",
+                              "name": "altRow2Wind",
+                              "fill": "#f59e0b",
+                              "content": "38 mph",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "35z2B",
+                              "name": "altRow2Temp",
+                              "fill": "#f59e0b",
+                              "content": "-22°C",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "tLFy9",
+                              "name": "altRow2Status",
+                              "fill": "#f59e0b",
+                              "cornerRadius": 3,
+                              "padding": [
+                                2,
+                                6
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "MFUL0",
+                                  "name": "altRow2StatusText",
+                                  "fill": "#000000",
+                                  "content": "CAUTION",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 10,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "55a1V",
+                          "name": "altRow3",
+                          "width": "fill_container",
+                          "fill": "#22c55e1a",
+                          "cornerRadius": 4,
+                          "padding": [
+                            6,
+                            8
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wg8hi",
+                              "name": "altRow3Alt",
+                              "fill": "#22c55e",
+                              "content": "10–20 km",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "C5o3t",
+                              "name": "altRow3Wind",
+                              "fill": "#22c55e",
+                              "content": "62 mph",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "3RHwm",
+                              "name": "altRow3Temp",
+                              "fill": "#22c55e",
+                              "content": "-55°C",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "YzcV5",
+                              "name": "altRow3Status",
+                              "fill": "#22c55e",
+                              "cornerRadius": 3,
+                              "padding": [
+                                2,
+                                6
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "8fpOC",
+                                  "name": "altRow3StatusText",
+                                  "fill": "#000000",
+                                  "content": "GO",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 10,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VwnS9",
+                          "name": "altRow4",
+                          "width": "fill_container",
+                          "fill": "#22c55e1a",
+                          "cornerRadius": 4,
+                          "padding": [
+                            6,
+                            8
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ucUhB",
+                              "name": "altRow4Alt",
+                              "fill": "#22c55e",
+                              "content": "20–30 km",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "5ILDp",
+                              "name": "altRow4Wind",
+                              "fill": "#22c55e",
+                              "content": "28 mph",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "N3LkS",
+                              "name": "altRow4Temp",
+                              "fill": "#22c55e",
+                              "content": "-60°C",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hR9SR",
+                              "name": "altRow4Status",
+                              "fill": "#22c55e",
+                              "cornerRadius": 3,
+                              "padding": [
+                                2,
+                                6
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "UOTP6",
+                                  "name": "altRow4StatusText",
+                                  "fill": "#000000",
+                                  "content": "GO",
+                                  "fontFamily": "Geist",
+                                  "fontSize": 10,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rIcxR",
+                  "name": "notamCard",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qOV1K",
+                      "name": "notamCardTitle",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aKL1U",
+                          "name": "notamTitleText",
+                          "fill": "$--foreground",
+                          "content": "NOTAMs",
+                          "fontFamily": "Geist",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "LFq9q",
+                          "name": "notamCount",
+                          "fill": "#f59e0b1a",
+                          "cornerRadius": 10,
+                          "padding": [
+                            3,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kNpLn",
+                              "name": "notamCountText",
+                              "fill": "#f59e0b",
+                              "content": "3 Active",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qZBHC",
+                      "name": "notamList",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "QGw3E",
+                          "name": "notam1",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "tIbds",
+                              "name": "notam1Header",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "QCvhn",
+                                  "name": "notam1Id",
+                                  "fill": "$--muted-foreground",
+                                  "content": "KROW A0042/26",
+                                  "fontFamily": "Geist Mono",
+                                  "fontSize": 10,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "B4Rng",
+                                  "name": "notam1Type",
+                                  "fill": "#f59e0b26",
+                                  "cornerRadius": 3,
+                                  "padding": [
+                                    2,
+                                    6
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "E47vk",
+                                      "name": "notam1TypeText",
+                                      "fill": "#f59e0b",
+                                      "content": "TFR",
+                                      "fontFamily": "Geist",
+                                      "fontSize": 10,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Yc8gN",
+                              "name": "notam1Desc",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Temporary flight restriction 10NM radius KROW, SFC–17999 ft. Active 0800–1400 MDT.",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GsmhR",
+                          "name": "notam2",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "qIJ6a",
+                              "name": "notam2Header",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kOPXl",
+                                  "name": "notam2Id",
+                                  "fill": "$--muted-foreground",
+                                  "content": "KROW B0011/26",
+                                  "fontFamily": "Geist Mono",
+                                  "fontSize": 10,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "DOSaL",
+                                  "name": "notam2Type",
+                                  "fill": "#3b82f626",
+                                  "cornerRadius": 3,
+                                  "padding": [
+                                    2,
+                                    6
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Ni7ll",
+                                      "name": "notam2TypeText",
+                                      "fill": "#60a5fa",
+                                      "content": "UAV",
+                                      "fontFamily": "Geist",
+                                      "fontSize": 10,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "qQEOg",
+                              "name": "notam2Desc",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "UAS operations approved corridor via LAANC. Below 400 ft AGL. Authorization NM-ROS-2604.",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "0CBPg",
+                          "name": "notam3",
+                          "width": "fill_container",
+                          "fill": "$--muted",
+                          "cornerRadius": 6,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            10,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "HfoY0",
+                              "name": "notam3Header",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "CfF2s",
+                                  "name": "notam3Id",
+                                  "fill": "$--muted-foreground",
+                                  "content": "ZAB SIGMET 4/26",
+                                  "fontFamily": "Geist Mono",
+                                  "fontSize": 10,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "AdDop",
+                                  "name": "notam3Type",
+                                  "fill": "#22c55e1a",
+                                  "cornerRadius": 3,
+                                  "padding": [
+                                    2,
+                                    6
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "5GKe5",
+                                      "name": "notam3TypeText",
+                                      "fill": "#22c55e",
+                                      "content": "WX",
+                                      "fontFamily": "Geist",
+                                      "fontSize": 10,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "DMg7x",
+                              "name": "notam3Desc",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Moderate turbulence FL180–FL280 over SE New Mexico. Dissipating by 1100 MDT.",
+                              "fontFamily": "Geist",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZFGKA",
+                      "name": "notamInfoNote",
+                      "width": "fill_container",
+                      "fill": "$--muted",
+                      "cornerRadius": 6,
+                      "gap": 6,
+                      "padding": [
+                        8,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "8KzfT",
+                          "name": "notamInfoIcon",
+                          "width": 12,
+                          "height": 12,
+                          "iconFontName": "info",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Fm2SR",
+                          "name": "notamInfoText",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "NOTAMs are informational. Review with your Safety Officer.",
+                          "fontFamily": "Geist",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         }
                       ]
                     }

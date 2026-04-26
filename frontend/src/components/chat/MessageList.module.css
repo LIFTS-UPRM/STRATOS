@@ -51,8 +51,141 @@
   font-size: 14px;
   line-height: 1.7;
   color: var(--color-text-primary);
-  white-space: pre-wrap;
   word-break: break-word;
+}
+
+.assistantText > *:first-child {
+  margin-top: 0;
+}
+
+.assistantText > *:last-child {
+  margin-bottom: 0;
+}
+
+.assistantText p,
+.assistantText ul,
+.assistantText ol,
+.assistantText pre,
+.assistantText blockquote,
+.assistantText table,
+.assistantText hr {
+  margin: 0 0 12px;
+}
+
+.assistantText h1,
+.assistantText h2,
+.assistantText h3,
+.assistantText h4 {
+  margin: 18px 0 10px;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.assistantText h1 {
+  font-size: 20px;
+}
+
+.assistantText h2 {
+  font-size: 17px;
+}
+
+.assistantText h3,
+.assistantText h4 {
+  font-size: 15px;
+}
+
+.assistantText ul,
+.assistantText ol {
+  padding-left: 20px;
+}
+
+.assistantText li + li {
+  margin-top: 4px;
+}
+
+.assistantText li > ul,
+.assistantText li > ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.assistantText a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  text-underline-offset: 2px;
+}
+
+.assistantText strong {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.assistantText code {
+  font-size: 12px;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  padding: 0.15em 0.4em;
+}
+
+.assistantText pre {
+  overflow-x: auto;
+  padding: 12px 14px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 10px;
+}
+
+.assistantText pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.assistantText blockquote {
+  padding: 10px 14px;
+  border-left: 3px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  color: var(--color-text-secondary);
+  border-radius: 0 10px 10px 0;
+}
+
+.assistantText hr {
+  border: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.assistantText table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 10px;
+}
+
+.assistantText th,
+.assistantText td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+
+.assistantText th {
+  background: var(--color-surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.assistantText tr:last-child td {
+  border-bottom: 0;
 }
 
 /* ─── Trajectory artifact ───────────────────────────────────── */
@@ -138,49 +271,69 @@
   word-break: break-word;
 }
 
-/* ─── Processing badge ────────────────────────────────────────── */
-.processingBadge {
+/* ─── Loading indicator ───────────────────────────────────────── */
+.loadingShell {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0 2px;
+  animation: messageEnter var(--duration-slow) var(--ease-out) both;
+}
+
+.loadingHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 16px;
+}
+
+.loadingMicrodot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 78%, white 22%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 12%, transparent);
+  animation: loadingDotPulse 1.8s ease-in-out infinite;
+}
+
+.loadingMeta {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-accent);
-  background: var(--color-accent-dim);
-  padding: 2px 8px;
-  border-radius: 4px;
-  animation: processingPulse 2s ease-in-out infinite;
+  color: var(--color-text-muted);
 }
 
 /* ─── Loading state ───────────────────────────────────────────── */
 .loadingState {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.scanBar {
-  position: relative;
-  height: 2px;
-  background: var(--color-border);
-  border-radius: 1px;
-  overflow: hidden;
-}
-
-.scanLine {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  height: 4px;
-  width: 35%;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-  filter: blur(1px);
-  animation: scanAnim 2s linear infinite;
+  min-height: 1.3em;
 }
 
 .loadingStep {
   font-size: 13px;
   color: var(--color-text-secondary);
-  animation: fadeInStep 0.35s var(--ease-out) both;
+  letter-spacing: 0.01em;
+  animation: fadeInStep 0.24s var(--ease-out) both;
+}
+
+@keyframes loadingDotPulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingShell,
+  .loadingStep,
+  .loadingMicrodot {
+    animation: none;
+  }
 }
 
 /* ─── Tool calls ──────────────────────────────────────────────── */

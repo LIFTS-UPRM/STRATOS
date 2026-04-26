@@ -1,0 +1,252 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background-color: #17182a;
+  background-image: url("/assets/login/login-bg.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 11, 24, 0.18);
+  pointer-events: none;
+}
+
+.loginCard {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 658px);
+  min-height: 315px;
+  display: grid;
+  gap: 24px;
+  padding: 42px 38px;
+  border-radius: 42px;
+  background: rgba(31, 31, 29, 0.96);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+}
+
+.brandLockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.brandLogo {
+  width: clamp(132px, 26vw, 176px);
+  height: auto;
+}
+
+.authPanel {
+  display: grid;
+  gap: 10px;
+}
+
+.eyebrow {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title {
+  color: #f5f7fb;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.subtitle {
+  max-width: 460px;
+  color: rgba(231, 236, 245, 0.72);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.loginButton {
+  width: 100%;
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid rgba(25, 31, 41, 0.1);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fbfbfc 0%, #f0f2f5 100%);
+  color: #171717;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.loginButton:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f6f8 100%);
+  border-color: rgba(0, 84, 180, 0.16);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+}
+
+.loginButton:active {
+  transform: translateY(0);
+}
+
+.loginButton:disabled {
+  cursor: wait;
+  opacity: 0.94;
+}
+
+.loginButtonMain {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.loginButtonText {
+  color: #14181e;
+  font-size: 1.03rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.loginButtonMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #4a5464;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.microsoftLogo {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.microsoftLogo span {
+  display: block;
+}
+
+.logoTileRed {
+  background: #f25022;
+}
+
+.logoTileGreen {
+  background: #7fba00;
+}
+
+.logoTileBlue {
+  background: #00a4ef;
+}
+
+.logoTileYellow {
+  background: #ffb900;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #0067b8;
+  border-radius: 999px;
+  animation: spin 850ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 20px;
+    background-position: 34% center;
+  }
+
+  .loginCard {
+    width: min(100%, 560px);
+    min-height: 280px;
+    gap: 22px;
+    padding: 32px 24px;
+    border-radius: 32px;
+  }
+
+  .brandLogo {
+    width: clamp(128px, 34vw, 160px);
+  }
+
+  .loginButton {
+    min-height: 84px;
+    padding: 18px 20px;
+  }
+
+  .subtitle {
+    max-width: 100%;
+  }
+
+  .loginButtonText {
+    font-size: 0.98rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 16px;
+    background-position: 28% center;
+  }
+
+  .loginCard {
+    min-height: 220px;
+    padding: 24px 16px;
+    gap: 18px;
+    border-radius: 28px;
+  }
+
+  .brandLockup {
+    margin-bottom: 2px;
+  }
+
+  .brandLogo {
+    width: 136px;
+  }
+
+  .title {
+    font-size: 1.45rem;
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+  }
+
+  .loginButton {
+    min-height: 72px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 18px;
+  }
+
+  .loginButtonMeta {
+    padding-left: 40px;
+  }
+}
