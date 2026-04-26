@@ -455,6 +455,8 @@ def test_chat_returns_trajectory_artifact_when_simulation_succeeds(monkeypatch) 
     assert body["trajectory_artifact"]["launch"]["lat"] == 18.2
     assert body["trajectory_artifact"]["mean_landing"]["lon"] == -66.9
     assert body["trajectory_artifact"]["landing_uncertainty_sigma_m"] == 1200.0
+    assert body["trajectory_artifact"]["sondehub_reference"] is None
+
 
 def test_chat_accepts_boundary_message_and_history(monkeypatch) -> None:
     FakeProvider.completions = FakeCompletions()
@@ -530,12 +532,28 @@ def test_chat_rejects_oversized_serialized_payload() -> None:
     assert response.status_code == 413
     assert response.json()["detail"]["error"] == "Chat request payload is too large."
 
-
 def test_chat_rejects_deeply_nested_payload() -> None:
     nested = "x"
     for _ in range(CHAT_PAYLOAD_MAX_DEPTH + 1):
         nested = [nested]
-    assert body["trajectory_artifact"]["sondehub_reference"] is None
+
+    response = TestClient(app).post(
+        "/chat",
+        json={
+            "message": "hello",
+            "history": [
+                {
+                    "role": "user",
+                    "content": "ok",
+                    "ignored_extra": nested,
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["error"] == "Chat request JSON is too deeply nested."
+
 
 
 def test_chat_returns_trajectory_artifact_when_no_flight_zone_tool_succeeds(monkeypatch) -> None:
@@ -604,19 +622,6 @@ def test_chat_returns_trajectory_artifact_when_no_flight_zone_tool_succeeds(monk
     response = TestClient(app).post(
         "/chat",
         json={
-            "message": "hello",
-            "history": [
-                {
-                    "role": "user",
-                    "content": "ok",
-                    "ignored_extra": nested,
-                }
-            ],
-        },
-    )
-
-    assert response.status_code == 422
-    assert response.json()["detail"]["error"] == "Chat request JSON is too deeply nested."
             "message": "Show the no-flight zone",
             "enabled_tool_groups": ["airspace"],
         },

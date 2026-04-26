@@ -174,6 +174,11 @@ def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | N
 
     return {"role": message.role, "content": content}
 
+def _infer_enabled_tool_groups(message: str) -> list[str] | None:
+    normalized = message.casefold()
+    if any(marker in normalized for marker in TRAJECTORY_REQUEST_MARKERS):
+        return ["trajectory"]
+    return None
 
 @app.post(
     "/chat",
@@ -229,17 +234,9 @@ def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | N
         }
     },
 )
+
 async def chat(request: Request) -> ChatResponse:
     payload = await _parse_chat_request(request)
-def _infer_enabled_tool_groups(message: str) -> list[str] | None:
-    normalized = message.casefold()
-    if any(marker in normalized for marker in TRAJECTORY_REQUEST_MARKERS):
-        return ["trajectory"]
-    return None
-
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat(payload: ChatRequest) -> ChatResponse:
     logger.info("Received chat message (%d chars)", len(payload.message))
 
     tool_calls_log: list[ToolCallRecord] = []
