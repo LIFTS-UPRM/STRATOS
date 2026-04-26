@@ -4,7 +4,9 @@ import asyncio
 import json
 import logging
 
-from fastapi import FastAPI
+from pydantic import ValidationError
+from fastapi import FastAPI, HTTPException, Request, status
+
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.prompt_assembly import (
@@ -16,6 +18,11 @@ from llm import OpenAIProvider, execute_tool
 from app.config import get_settings
 from app.logging import configure_logging
 from app.schemas import (
+    CHAT_HISTORY_MAX_ITEMS,
+    CHAT_HISTORY_MESSAGE_MAX_CHARS,
+    CHAT_MESSAGE_MAX_CHARS,
+    CHAT_PAYLOAD_MAX_BYTES,
+    CHAT_PAYLOAD_MAX_DEPTH,
     ChatHistoryMessage,
     ChatRequest,
     ChatResponse,
@@ -66,6 +73,96 @@ async def on_startup() -> None:
 async def health() -> dict[str, str]:
     return {"status": "ok"}
 
+async def _read_limited_body(request: Request) -> bytes:
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            declared_size = int(content_length)
+        except ValueError:
+            declared_size = CHAT_PAYLOAD_MAX_BYTES + 1
+
+        if declared_size > CHAT_PAYLOAD_MAX_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail={
+                    "error": "Chat request payload is too large.",
+                    "limit_bytes": CHAT_PAYLOAD_MAX_BYTES,
+                },
+            )
+
+    body = bytearray()
+    async for chunk in request.stream():
+        body.extend(chunk)
+        if len(body) > CHAT_PAYLOAD_MAX_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail={
+                    "error": "Chat request payload is too large.",
+                    "limit_bytes": CHAT_PAYLOAD_MAX_BYTES,
+                },
+            )
+
+    return bytes(body)
+
+
+def _within_json_depth(value: object) -> bool:
+    stack = [(value, 1)]
+
+    while stack:
+        current, depth = stack.pop()
+        if depth > CHAT_PAYLOAD_MAX_DEPTH:
+            return False
+
+        if isinstance(current, dict):
+            stack.extend((item, depth + 1) for item in current.values())
+        elif isinstance(current, list):
+            stack.extend((item, depth + 1) for item in current)
+
+    return True
+
+
+async def _parse_chat_request(request: Request) -> ChatRequest:
+    raw_body = await _read_limited_body(request)
+
+    try:
+        raw_payload = json.loads(raw_body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "Chat request body must be valid JSON."},
+        ) from exc
+    except RecursionError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "Chat request JSON is too deeply nested."},
+        ) from exc
+
+    if not isinstance(raw_payload, dict):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"error": "Chat request body must be a JSON object."},
+        )
+
+    if not _within_json_depth(raw_payload):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "Chat request JSON is too deeply nested.",
+                "limit_depth": CHAT_PAYLOAD_MAX_DEPTH,
+            },
+        )
+
+    try:
+        return ChatRequest.model_validate(raw_payload)
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "Invalid chat request.",
+                "details": exc.errors(),
+            },
+        ) from exc
+
 
 def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | None:
     if message.role not in ALLOWED_HISTORY_ROLES:
@@ -77,16 +174,69 @@ def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | N
 
     return {"role": message.role, "content": content}
 
-
 def _infer_enabled_tool_groups(message: str) -> list[str] | None:
     normalized = message.casefold()
     if any(marker in normalized for marker in TRAJECTORY_REQUEST_MARKERS):
         return ["trajectory"]
     return None
 
+@app.post(
+    "/chat",
+    response_model=ChatResponse,
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["message"],
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "maxLength": CHAT_MESSAGE_MAX_CHARS,
+                            },
+                            "history": {
+                                "type": "array",
+                                "maxItems": CHAT_HISTORY_MAX_ITEMS,
+                                "items": {
+                                    "type": "object",
+                                    "required": ["role", "content"],
+                                    "properties": {
+                                        "role": {
+                                            "type": "string",
+                                            "enum": ["user", "assistant"],
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "maxLength": CHAT_HISTORY_MESSAGE_MAX_CHARS,
+                                        },
+                                    },
+                                },
+                            },
+                            "enabled_tool_groups": {
+                                "type": "array",
+                                "nullable": True,
+                                "items": {
+                                    "type": "string",
+                                    "enum": ["trajectory", "weather", "airspace"],
+                                },
+                            },
+                        },
+                    },
+                    "example": {
+                        "message": "hello",
+                        "history": [],
+                        "enabled_tool_groups": [],
+                    },
+                }
+            },
+        }
+    },
+)
 
-@app.post("/chat", response_model=ChatResponse)
-async def chat(payload: ChatRequest) -> ChatResponse:
+async def chat(request: Request) -> ChatResponse:
+    payload = await _parse_chat_request(request)
     logger.info("Received chat message (%d chars)", len(payload.message))
 
     tool_calls_log: list[ToolCallRecord] = []

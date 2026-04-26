@@ -7,11 +7,17 @@ from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.main import app
 
+from app.schemas import (
+    CHAT_HISTORY_MAX_ITEMS,
+    CHAT_HISTORY_MESSAGE_MAX_CHARS,
+    CHAT_MESSAGE_MAX_CHARS,
+    CHAT_PAYLOAD_MAX_BYTES,
+    CHAT_PAYLOAD_MAX_DEPTH,
+)
 
 def decode_envelope(message: dict) -> dict:
     return json.loads(message["content"])
@@ -450,6 +456,104 @@ def test_chat_returns_trajectory_artifact_when_simulation_succeeds(monkeypatch) 
     assert body["trajectory_artifact"]["mean_landing"]["lon"] == -66.9
     assert body["trajectory_artifact"]["landing_uncertainty_sigma_m"] == 1200.0
     assert body["trajectory_artifact"]["sondehub_reference"] is None
+
+
+def test_chat_accepts_boundary_message_and_history(monkeypatch) -> None:
+    FakeProvider.completions = FakeCompletions()
+    monkeypatch.setattr("app.main.OpenAIProvider", FakeProvider)
+
+    response = TestClient(app).post(
+        "/chat",
+        json={
+            "message": "x" * CHAT_MESSAGE_MAX_CHARS,
+            "history": [
+                {"role": "user", "content": "ok"}
+                for _ in range(CHAT_HISTORY_MAX_ITEMS)
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+
+
+def test_chat_rejects_oversized_message() -> None:
+    response = TestClient(app).post(
+        "/chat",
+        json={"message": "x" * (CHAT_MESSAGE_MAX_CHARS + 1)},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["error"] == "Invalid chat request."
+
+
+def test_chat_rejects_oversized_history() -> None:
+    response = TestClient(app).post(
+        "/chat",
+        json={
+            "message": "hello",
+            "history": [
+                {"role": "user", "content": "ok"}
+                for _ in range(CHAT_HISTORY_MAX_ITEMS + 1)
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["error"] == "Invalid chat request."
+
+
+def test_chat_rejects_oversized_history_message() -> None:
+    response = TestClient(app).post(
+        "/chat",
+        json={
+            "message": "hello",
+            "history": [
+                {
+                    "role": "user",
+                    "content": "x" * (CHAT_HISTORY_MESSAGE_MAX_CHARS + 1),
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["error"] == "Invalid chat request."
+
+
+def test_chat_rejects_oversized_serialized_payload() -> None:
+    body = json.dumps({"message": "x" * CHAT_PAYLOAD_MAX_BYTES})
+
+    response = TestClient(app).post(
+        "/chat",
+        content=body,
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 413
+    assert response.json()["detail"]["error"] == "Chat request payload is too large."
+
+def test_chat_rejects_deeply_nested_payload() -> None:
+    nested = "x"
+    for _ in range(CHAT_PAYLOAD_MAX_DEPTH + 1):
+        nested = [nested]
+
+    response = TestClient(app).post(
+        "/chat",
+        json={
+            "message": "hello",
+            "history": [
+                {
+                    "role": "user",
+                    "content": "ok",
+                    "ignored_extra": nested,
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["error"] == "Chat request JSON is too deeply nested."
+
 
 
 def test_chat_returns_trajectory_artifact_when_no_flight_zone_tool_succeeds(monkeypatch) -> None:

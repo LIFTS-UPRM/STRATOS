@@ -305,6 +305,18 @@ curl -s -X POST http://127.0.0.1:8000/chat \
 - Response `tool_calls` are server-generated output for UI display.
 - If trusted prior tool continuity is needed later, it must come from server-owned state rather than client replay.
 
+### Chat Request Limits
+
+The `/chat` endpoint enforces request limits to prevent oversized prompts and abuse:
+
+- `message`: 8,000 characters max
+- `history`: 30 items max
+- each history item `content`: 8,000 characters max
+- serialized request body: 512 KiB max
+- JSON nesting depth: 20 levels max
+
+Oversized, malformed, or deeply nested chat requests return clear 4xx responses before prompt assembly or LLM calls.
+
 ---
 
 ## Contributing
