@@ -37,6 +37,21 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.app_name)
 ALLOWED_HISTORY_ROLES = frozenset({"user", "assistant"})
+TRAJECTORY_REQUEST_MARKERS = (
+    "astra trajectory",
+    "astra simulation",
+    "sondehub",
+    "trajectory simulation",
+    "trajectory analysis",
+    "run astra",
+    "run sondehub",
+    "run a trajectory",
+    "landing prediction",
+    "landing area",
+    "num runs",
+    "burst altitude",
+    "descent rate",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -216,6 +231,15 @@ def _sanitize_history_message(message: ChatHistoryMessage) -> dict[str, str] | N
 )
 async def chat(request: Request) -> ChatResponse:
     payload = await _parse_chat_request(request)
+def _infer_enabled_tool_groups(message: str) -> list[str] | None:
+    normalized = message.casefold()
+    if any(marker in normalized for marker in TRAJECTORY_REQUEST_MARKERS):
+        return ["trajectory"]
+    return None
+
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat(payload: ChatRequest) -> ChatResponse:
     logger.info("Received chat message (%d chars)", len(payload.message))
 
     tool_calls_log: list[ToolCallRecord] = []
@@ -231,6 +255,9 @@ async def chat(request: Request) -> ChatResponse:
                 messages.append(format_client_history_message(**sanitized_message))
 
         messages.append(format_current_user_message(payload.message))
+        enabled_tool_groups = payload.enabled_tool_groups
+        if enabled_tool_groups is None:
+            enabled_tool_groups = _infer_enabled_tool_groups(payload.message)
         last_tool_name = "llm"
         max_steps = 10
         seen_calls: set[tuple[str, str]] = set()
@@ -244,7 +271,7 @@ async def chat(request: Request) -> ChatResponse:
                 "model": provider.get_model(),
                 "messages": messages,
             }
-            enabled_tools = provider.get_tools(payload.enabled_tool_groups)
+            enabled_tools = provider.get_tools(enabled_tool_groups)
             if enabled_tools:
                 completion_kwargs["tools"] = enabled_tools
                 completion_kwargs["tool_choice"] = "auto"
@@ -330,7 +357,11 @@ async def chat(request: Request) -> ChatResponse:
                 
                 try:
                     # Use longer timeout for simulation tools (up to 2 minutes)
-                    timeout = 120 if tool_name == "astra_run_simulation" else 30
+                    timeout = (
+                        120
+                        if tool_name in {"sondehub_run_simulation", "get_balloon_no_flight_zone"}
+                        else 30
+                    )
                     tool_result = await asyncio.wait_for(
                         execute_tool(tool_name, tool_args),
                         timeout=timeout
@@ -342,9 +373,7 @@ async def chat(request: Request) -> ChatResponse:
                         if isinstance(parsed_result, dict) and parsed_result.get("error"):
                             logger.warning("Tool returned error payload: %s", tool_name)
                         if (
-                            tool_name == "astra_run_simulation"
-                            and isinstance(parsed_result, dict)
-                            and parsed_result.get("status") == "success"
+                            isinstance(parsed_result, dict)
                             and parsed_result.get("trajectory_artifact")
                         ):
                             try:

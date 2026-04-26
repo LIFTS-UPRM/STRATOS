@@ -477,7 +477,12 @@ def _load_or_refresh_forecast_cache(environment) -> dict[str, Any]:
     latest_cycle_iso = latest_cycle.isoformat()
     metadata = _load_cache_metadata(metadata_path)
 
-    if metadata and metadata.get("latest_cycle_utc") == latest_cycle_iso and module_path.exists():
+    if (
+        metadata
+        and metadata.get("latest_cycle_utc") == latest_cycle_iso
+        and metadata.get("actual_cycle_utc") == latest_cycle_iso
+        and module_path.exists()
+    ):
         try:
             cached_module = _load_cached_gfs_module(module_path)
             cached_utc_offset = metadata.get("utc_offset_hours")
@@ -795,6 +800,99 @@ def _build_sondehub_reference(payload: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def _build_sondehub_comparison(
+    baseline_profile,
+    reference: dict[str, Any] | None,
+) -> dict[str, float] | None:
+    if reference is None:
+        return None
+
+    astra_burst_lat = float(baseline_profile.latitudeProfile[baseline_profile.highestAltIndex])
+    astra_burst_lon = float(baseline_profile.longitudeProfile[baseline_profile.highestAltIndex])
+    astra_landing_lat = float(baseline_profile.latitudeProfile[-1])
+    astra_landing_lon = float(baseline_profile.longitudeProfile[-1])
+
+    return {
+        "astra_burst_lat": astra_burst_lat,
+        "astra_burst_lon": astra_burst_lon,
+        "astra_landing_lat": astra_landing_lat,
+        "astra_landing_lon": astra_landing_lon,
+        "sondehub_burst_lat": reference["burst"]["lat"],
+        "sondehub_burst_lon": reference["burst"]["lon"],
+        "sondehub_landing_lat": reference["landing"]["lat"],
+        "sondehub_landing_lon": reference["landing"]["lon"],
+        "burst_delta_km": _great_circle_km(
+            astra_burst_lat,
+            astra_burst_lon,
+            reference["burst"]["lat"],
+            reference["burst"]["lon"],
+        ),
+        "landing_delta_km": _great_circle_km(
+            astra_landing_lat,
+            astra_landing_lon,
+            reference["landing"]["lat"],
+            reference["landing"]["lon"],
+        ),
+    }
+
+
+def _parse_sondehub_datetime(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is not None:
+        return parsed.astimezone(UTC).replace(tzinfo=None)
+    return parsed
+
+
+def _sondehub_artifact_point(
+    point: dict[str, Any] | None,
+    launch_dt: datetime,
+) -> dict[str, float] | None:
+    if not point:
+        return None
+
+    artifact_point = {
+        "lat": float(point["lat"]),
+        "lon": float(point["lon"]),
+        "alt_m": float(point["alt_m"]),
+    }
+    point_dt = _parse_sondehub_datetime(point.get("datetime"))
+    if point_dt is not None:
+        artifact_point["time_s"] = max(0.0, (point_dt - launch_dt).total_seconds())
+    return artifact_point
+
+
+def _build_sondehub_artifact_reference(
+    sondehub_info: dict[str, Any],
+    launch_dt: datetime,
+) -> dict[str, Any] | None:
+    reference = sondehub_info.get("reference")
+    if not isinstance(reference, dict):
+        return None
+
+    trajectory = [
+        artifact_point
+        for point in reference.get("trajectory") or []
+        if (artifact_point := _sondehub_artifact_point(point, launch_dt)) is not None
+    ]
+    if not trajectory:
+        return None
+
+    return {
+        "provider": sondehub_info.get("provider", "sondehub-tawhiri"),
+        "status": sondehub_info.get("status", "compared"),
+        "request": sondehub_info.get("request"),
+        "trajectory": trajectory,
+        "burst": _sondehub_artifact_point(reference.get("burst"), launch_dt),
+        "landing": _sondehub_artifact_point(reference.get("landing"), launch_dt),
+    }
+
+
 def _build_sondehub_calibration(
     baseline_profile,
     sondehub_payload: dict[str, Any],
@@ -805,43 +903,21 @@ def _build_sondehub_calibration(
     if reference is None:
         return None
 
-    astra_burst_lat = float(baseline_profile.latitudeProfile[baseline_profile.highestAltIndex])
-    astra_burst_lon = float(baseline_profile.longitudeProfile[baseline_profile.highestAltIndex])
-    astra_landing_lat = float(baseline_profile.latitudeProfile[-1])
-    astra_landing_lon = float(baseline_profile.longitudeProfile[-1])
+    comparison = _build_sondehub_comparison(baseline_profile, reference)
+    if comparison is None:
+        return None
 
-    burst_delta_lat = (reference["burst"]["lat"] - astra_burst_lat) * weight
-    burst_delta_lon = _longitude_delta_deg(astra_burst_lon, reference["burst"]["lon"]) * weight
-    landing_delta_lat = (reference["landing"]["lat"] - astra_landing_lat) * weight
-    landing_delta_lon = _longitude_delta_deg(astra_landing_lon, reference["landing"]["lon"]) * weight
+    burst_delta_lat = (reference["burst"]["lat"] - comparison["astra_burst_lat"]) * weight
+    burst_delta_lon = _longitude_delta_deg(comparison["astra_burst_lon"], reference["burst"]["lon"]) * weight
+    landing_delta_lat = (reference["landing"]["lat"] - comparison["astra_landing_lat"]) * weight
+    landing_delta_lon = _longitude_delta_deg(comparison["astra_landing_lon"], reference["landing"]["lon"]) * weight
 
     return {
         "provider": "sondehub-tawhiri",
         "weight": float(weight),
         "burst_delta": {"lat": burst_delta_lat, "lon": burst_delta_lon},
         "landing_delta": {"lat": landing_delta_lat, "lon": landing_delta_lon},
-        "comparison": {
-            "astra_burst_lat": astra_burst_lat,
-            "astra_burst_lon": astra_burst_lon,
-            "astra_landing_lat": astra_landing_lat,
-            "astra_landing_lon": astra_landing_lon,
-            "sondehub_burst_lat": reference["burst"]["lat"],
-            "sondehub_burst_lon": reference["burst"]["lon"],
-            "sondehub_landing_lat": reference["landing"]["lat"],
-            "sondehub_landing_lon": reference["landing"]["lon"],
-            "burst_delta_km": _great_circle_km(
-                astra_burst_lat,
-                astra_burst_lon,
-                reference["burst"]["lat"],
-                reference["burst"]["lon"],
-            ),
-            "landing_delta_km": _great_circle_km(
-                astra_landing_lat,
-                astra_landing_lon,
-                reference["landing"]["lat"],
-                reference["landing"]["lon"],
-            ),
-        },
+        "comparison": comparison,
         "reference": reference,
     }
 
@@ -1307,7 +1383,7 @@ def run_simulation(payload: dict[str, Any]) -> dict[str, Any]:
     )
     force_low_res = _coerce_bool(payload, "force_low_res", default=False)
     compare_with_sondehub = _coerce_bool(payload, "compare_with_sondehub", default=True)
-    adjust_with_sondehub = _coerce_bool(payload, "adjust_with_sondehub", default=True)
+    adjust_with_sondehub = _coerce_bool(payload, "adjust_with_sondehub", default=False)
     sondehub_adjustment_weight = _coerce_float(
         payload,
         "sondehub_adjustment_weight",
@@ -1400,7 +1476,14 @@ def run_simulation(payload: dict[str, Any]) -> dict[str, Any]:
                 try:
                     sondehub_payload = _fetch_sondehub_prediction(request_params)
                     sondehub_info["request"] = request_params
-                    sondehub_info["reference"] = _build_sondehub_reference(sondehub_payload)
+                    sondehub_reference = _build_sondehub_reference(sondehub_payload)
+                    sondehub_info["reference"] = sondehub_reference
+                    sondehub_comparison = _build_sondehub_comparison(
+                        baseline_sim.results[0],
+                        sondehub_reference,
+                    )
+                    if sondehub_comparison is not None:
+                        sondehub_info["comparison"] = sondehub_comparison
                     if adjust_with_sondehub and sondehub_adjustment_weight > 0:
                         calibration = _build_sondehub_calibration(
                             baseline_sim.results[0],
@@ -1462,6 +1545,10 @@ def run_simulation(payload: dict[str, Any]) -> dict[str, Any]:
         time_key="flight_duration_s",
     )
     mean_trajectory = _build_mean_trajectory(adjusted_trajectory_runs)
+    sondehub_artifact_reference = _build_sondehub_artifact_reference(
+        sondehub_info,
+        launch_dt,
+    )
 
     return {
         "status": "success",
@@ -1507,6 +1594,7 @@ def run_simulation(payload: dict[str, Any]) -> dict[str, Any]:
                 run_summaries,
                 mean_landing,
             ),
+            "sondehub_reference": sondehub_artifact_reference,
         },
     }
 

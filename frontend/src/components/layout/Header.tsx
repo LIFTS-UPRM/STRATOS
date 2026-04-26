@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Mission } from "@/types/mission";
 import styles from "./Header.module.css";
 
 // ─── Constants ────────────────────────────────────────────────
@@ -42,17 +43,51 @@ function DotsVerticalIcon() {
 
 // ─── Component ────────────────────────────────────────────────
 interface HeaderProps {
-  projectName?: string;
   onToggleSidebar?: () => void;
   isSidebarOpen?: boolean;
+  missions: Mission[];
+  activeMissionId: string;
+  onSelectMission: (missionId: string) => void;
 }
 
 export default function Header({
-  projectName = "ASCENT Sub-Scale",
   onToggleSidebar,
   isSidebarOpen = true,
+  missions,
+  activeMissionId,
+  onSelectMission,
 }: HeaderProps) {
   const [activeTab, setActiveTab] = useState<Tab>("Chat");
+  const [isMissionMenuOpen, setIsMissionMenuOpen] = useState(false);
+  const missionMenuRef = useRef<HTMLDivElement | null>(null);
+  const activeMission =
+    missions.find((mission) => mission.id === activeMissionId) ?? missions[0];
+
+  useEffect(() => {
+    if (!isMissionMenuOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!missionMenuRef.current?.contains(event.target as Node)) {
+        setIsMissionMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsMissionMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMissionMenuOpen]);
 
   return (
     <header className={styles.header}>
@@ -68,10 +103,58 @@ export default function Header({
             <SidebarToggleIcon isOpen={isSidebarOpen} />
           </button>
         )}
-        <button className={styles.projectBtn} aria-label="Switch mission">
-          <span className={styles.projectTitle}>{projectName}</span>
-          <span className={styles.chevron}><ChevronDownIcon /></span>
-        </button>
+        <div className={styles.missionSwitcher} ref={missionMenuRef}>
+          <button
+            className={styles.projectBtn}
+            aria-label="Switch mission"
+            aria-haspopup="menu"
+            aria-expanded={isMissionMenuOpen}
+            type="button"
+            onClick={() => setIsMissionMenuOpen((open) => !open)}
+          >
+            <span className={styles.projectMeta}>
+              <span className={styles.projectTitle}>{activeMission?.title ?? "Select mission"}</span>
+            </span>
+            <span className={styles.projectStatus}>{activeMission?.status ?? "upcoming"}</span>
+            <span className={styles.chevron}><ChevronDownIcon /></span>
+          </button>
+
+          {isMissionMenuOpen && (
+            <div className={styles.missionMenu} role="menu" aria-label="Mission switcher">
+              {missions.map((mission) => {
+                const isActive = mission.id === activeMissionId;
+
+                return (
+                  <button
+                    key={mission.id}
+                    className={`${styles.missionOption} ${isActive ? styles.missionOptionActive : ""}`}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={isActive}
+                    onClick={() => {
+                      onSelectMission(mission.id);
+                      setIsMissionMenuOpen(false);
+                    }}
+                  >
+                    <span className={styles.missionOptionText}>
+                      <span className={styles.missionOptionTitle}>{mission.title}</span>
+                      <span className={styles.missionOptionStatus}>{mission.status}</span>
+                    </span>
+                    <span
+                      className={
+                        styles.statusBadge +
+                        " " +
+                        styles["status_" + mission.status.replace("-", "_")]
+                      }
+                    >
+                      {mission.status}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Center: tab navigation */}

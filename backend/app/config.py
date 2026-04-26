@@ -22,6 +22,7 @@ class Settings:
     llm_model: str
     faa_client_id: str
     faa_client_secret: str
+    laminar_user_key: str
     astra_gfs_cache_dir: str
 
 
@@ -40,6 +41,7 @@ def get_settings() -> Settings:
         llm_model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         faa_client_id=os.getenv("FAA_CLIENT_ID", ""),
         faa_client_secret=os.getenv("FAA_CLIENT_SECRET", ""),
+        laminar_user_key=os.getenv("LAMINAR_USER_KEY", ""),
         astra_gfs_cache_dir=os.getenv(
             "ASTRA_GFS_CACHE_DIR",
             str(default_astra_cache_dir),

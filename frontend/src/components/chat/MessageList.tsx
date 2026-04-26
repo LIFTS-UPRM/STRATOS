@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { Message, ToolCallRecord } from "@/types/chat";
 import styles from "./MessageList.module.css";
 
@@ -29,25 +31,21 @@ function formatUtcTime(date: Date): string {
 const TOOL_LABELS: Record<string, string> = {
   get_surface_weather:           "Surface Weather",
   get_winds_aloft:               "Winds Aloft",
-  check_notam_airspace:          "NOTAM Check",
-  astra_list_balloons:           "Balloon Catalog",
-  astra_list_parachutes:         "Parachute Catalog",
-  astra_calculate_nozzle_lift:   "Nozzle Lift",
-  astra_calculate_balloon_volume:"Balloon Volume",
-  astra_run_simulation:          "Monte Carlo Simulation",
+  get_balloon_no_flight_zone:    "No-Flight Zone",
+  sondehub_run_simulation:       "SondeHub Monte Carlo",
 };
 
 function getArgSummary(name: string, args: Record<string, unknown>): string {
   switch (name) {
     case "get_surface_weather":
     case "get_winds_aloft":
+      return `${args.latitude}°, ${args.longitude}°`;
+    case "get_balloon_no_flight_zone":
+      return `${args.launch_lat}°, ${args.launch_lon}°`;
     case "check_notam_airspace":
       return `${args.latitude}°, ${args.longitude}°`;
-    case "astra_calculate_nozzle_lift":
-    case "astra_calculate_balloon_volume":
-      return `${args.balloon_model} · ${args.gas_type}`;
-    case "astra_run_simulation":
-      return `${args.balloon_model} · ${args.num_runs ?? 5} runs`;
+    case "sondehub_run_simulation":
+      return `${args.ascent_rate_ms ?? "?"} m/s · ${args.num_runs ?? "?"} runs`;
     default:
       return "";
   }
@@ -91,7 +89,18 @@ function AssistantMessage({ message }: { message: Message }) {
         <span className={styles.assistantLabel}>STRATOS AI</span>
         <span className={styles.assistantTime}>{formatUtcTime(message.createdAt)}</span>
       </div>
-      <p className={styles.assistantText}>{message.content}</p>
+      <div className={styles.assistantText}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({ node: _node, ...props }) => (
+              <a {...props} target="_blank" rel="noreferrer" />
+            ),
+          }}
+        >
+          {message.content}
+        </ReactMarkdown>
+      </div>
       {message.trajectoryArtifact && (
         <TrajectoryArtifactMap artifact={message.trajectoryArtifact} />
       )}
@@ -116,7 +125,7 @@ function UserMessage({ message }: { message: Message }) {
 const LOADING_STEPS = [
   "Analyzing request…",
   "Querying weather data…",
-  "Running simulation…",
+  "Running SondeHub simulation…",
   "Computing trajectory…",
 ];
 
@@ -132,15 +141,17 @@ function TypingIndicator() {
   }, []);
 
   return (
-    <div className={styles.assistantCard}>
-      <div className={styles.assistantHeader}>
+    <div
+      className={styles.loadingShell}
+      aria-live="polite"
+      aria-label={`STRATOS AI ${LOADING_STEPS[stepIdx]}`}
+    >
+      <div className={styles.loadingHeader}>
         <span className={styles.assistantLabel}>STRATOS AI</span>
-        <span className={styles.processingBadge}>processing</span>
+        <span className={styles.loadingMicrodot} aria-hidden="true" />
+        <span className={styles.loadingMeta}>processing</span>
       </div>
       <div className={styles.loadingState}>
-        <div className={styles.scanBar}>
-          <div className={styles.scanLine} />
-        </div>
         <span key={stepIdx} className={styles.loadingStep}>
           {LOADING_STEPS[stepIdx]}
         </span>
