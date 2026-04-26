@@ -48,7 +48,7 @@ STRATOS brings these functions together into a single mission platform.
 
 The **Chat** module is the intelligence layer of STRATOS.
 
-It allows users to interact with mission tools and documents through natural language. The assistant can talk to in-process MCP tools backed by the full vendored **HAB_Predictor/ASTRA** simulator, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
+It allows users to interact with mission tools and documents through natural language. The assistant can talk to in-process MCP tools backed by **SondeHub Tawhiri** trajectory prediction, access mission-related documents and files such as **SharePoint content and locations**, and help users reason through mission planning decisions.
 
 The Chat module is intended to act as a mission copilot, not just a chatbot. It helps users retrieve information, run planning-related actions, and understand mission context across all stages of the workflow.
 
@@ -199,28 +199,22 @@ Key outputs:
 - winds aloft: `wind_profile`, `jet_stream_alert`, `jet_stream_message`, `forecast_time`
 - both include `observation_links`
 
-#### 3) HAB_Predictor / ASTRA MCP (`astra_mcp`)
+#### 3) SondeHub Trajectory MCP (`sondehub_mcp`)
 
-File: `backend/mcp_servers/astra_server.py`
+File: `backend/mcp_servers/sondehub_server.py`
 
 Tools:
 
-- `astra_list_balloons(response_format="json")`
-- `astra_list_parachutes(response_format="json")`
-- `astra_calculate_nozzle_lift(balloon_model, gas_type, payload_weight_kg, ascent_rate_ms=5.0)`
-- `astra_calculate_balloon_volume(balloon_model, gas_type, nozzle_lift_kg, payload_weight_kg)`
-- `astra_run_simulation(launch_lat, launch_lon, launch_elevation_m, launch_datetime, balloon_model, gas_type, nozzle_lift_kg, payload_weight_kg, ...)`
+- `sondehub_run_simulation(launch_lat, launch_lon, launch_elevation_m, launch_datetime, ascent_rate_ms, burst_altitude_m, descent_rate_ms, num_runs, ...)`
 
 What they do:
 
-- list supported ASTRA balloon and parachute hardware
-- calculate nozzle lift and fill volume for pre-flight setup
-- run Monte Carlo balloon trajectory simulations with NOAA GFS forecasts and
-  SondeHub calibration from the vendored HAB_Predictor Python code
+- run SondeHub Tawhiri trajectory predictions
+- preserve Monte Carlo landing uncertainty by varying flight profile and launch time
+- require ascent rate, burst altitude, and descent rate rather than balloon hardware
 
 Key outputs:
 
-- hardware tools return structured ASTRA model catalogs and calculation results
 - simulation output includes `status`, `forecast`, `runs`, `aggregate`,
   `trajectory_run1`, and `trajectory_artifact`
 
@@ -231,12 +225,13 @@ From the `backend/` directory:
 ```bash
 python -m mcp_servers.notam_server
 python -m mcp_servers.weather_server
+python -m mcp_servers.sondehub_server
 ```
 
-`astra_mcp` is loaded directly inside the FastAPI backend from
-`backend/vendor/hab_predictor`, so a separate ASTRA/HAB server process is not
-required for normal chat flows. The standalone `python -m mcp_servers.astra_server`
-command is optional if you want to run the stdio MCP by itself.
+`sondehub_mcp` is loaded directly inside the FastAPI backend, so a separate
+server process is not required for normal chat flows. The standalone `python -m
+mcp_servers.sondehub_server` command is optional if you want to run the stdio
+MCP by itself.
 
 ### README Template for New MCP Tools
 
@@ -354,16 +349,17 @@ This project builds upon and is inspired by existing work in the high-altitude b
 
 - ASTRA
 
-  Balloon trajectory simulation foundation used by STRATOS through the vendored
-  HAB_Predictor fork and upstream ASTRA simulator work.  
+  Legacy vendored simulator code retained in the repository under its upstream
+  license. Current STRATOS chat trajectory prediction uses SondeHub Tawhiri
+  only.  
   Upstream ASTRA: <https://github.com/sobester/astra_simulator>  
   Vendored fork: <https://github.com/LIFTS-UPRM/HAB_Predictor>  
   License: BSD 3-Clause  
 
 - Tawhiri  
 
-  Landing prediction system used by the broader HAB ecosystem and referenced by
-  STRATOS calibration/comparison flows through SondeHub Tawhiri data.  
+  Landing prediction system used by the broader HAB ecosystem and by STRATOS
+  SondeHub-only trajectory simulations.  
   Repository: <https://github.com/cuspaceflight/tawhiri>  
   Project site: <http://predict.habhub.org/>  
   License: GNU GPL v3.0  
