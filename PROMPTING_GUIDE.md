@@ -7,7 +7,7 @@ STRATOS works best when you give it the mission context it needs up front:
 - where the launch is
 - when the launch is
 - what decision you need to make
-- what hardware or constraints matter
+- the SondeHub flight profile values
 - what kind of answer format you want back
 
 ## What STRATOS Chat Can Do Today
@@ -16,18 +16,17 @@ The current STRATOS chat backend is strongest at:
 
 - **surface weather assessment** for launch planning
 - **winds aloft analysis** for upper-level risk
-- **airspace hazard checks** for launch-area awareness
-- **ASTRA-based trajectory simulations** for landing prediction
-- **balloon and parachute selection support**
-- **pre-flight fill calculations** like nozzle lift and balloon volume
+- **balloon no-flight-zone checks** for trajectory-based airspace awareness
+- **SondeHub Tawhiri trajectory simulations** for landing prediction
+- **Monte Carlo landing uncertainty** from flight-profile and launch-time spread
 
 ## Prompting Formula
 
 Use this pattern when possible:
 
 > Help me with `[decision or task]` for a launch at `[location]` on `[date/time]`.  
-> Use `[weather / winds aloft / airspace / trajectory]`.  
-> Mission details: `[payload, balloon, gas, ascent rate, elevation, constraints]`.  
+> Use `[weather / winds aloft / no-flight-zone / trajectory]`.  
+> Mission details: `[launch elevation, ascent rate, burst altitude, descent rate, number of runs]`.  
 > Return `[brief / recommendation / table / checklist / go-no-go summary]`.
 
 ## What To Include
@@ -60,26 +59,33 @@ Example:
 Launch time: 2026-04-27 10:00 AST
 ```
 
-### 3. Mission hardware
+### 3. Flight profile
 
-Trajectory and fill calculations improve a lot when you include:
+SondeHub trajectory predictions require profile values, not balloon hardware:
 
-- balloon model
-- parachute model, if known
-- gas type: `Helium` or `Hydrogen`
-- payload weight in kg
-- target ascent rate in m/s, if you do not know nozzle lift yet
-- nozzle lift in kg, if you already have it
+- ascent rate in m/s
+- burst altitude in meters
+- descent rate in m/s
+- number of Monte Carlo runs
+
+STRATOS does not infer these from balloon model, payload mass, gas type, nozzle lift, or parachute model.
 
 Example:
 
 ```text
-Balloon: TA800
-Parachute: SPH36
-Gas: Helium
-Payload weight: 0.433 kg
-Target ascent rate: 5.0 m/s
+Ascent rate: 5.0 m/s
+Burst altitude: 30000 m
+Descent rate: 6.0 m/s
+Num runs: 10
 ```
+
+Optional Monte Carlo controls:
+
+- seed, if you need repeatable results
+- ascent-rate spread as a percent
+- burst-altitude spread in meters
+- descent-rate spread as a percent
+- launch-time spread in minutes
 
 ### 4. The decision you need
 
@@ -87,8 +93,8 @@ Ask for a decision, not just raw data.
 
 - “Is this launch window GO / CAUTION / NO-GO?”
 - “Which of these two launch times reduces landing uncertainty?”
-- “What nozzle lift should we use?”
-- “Is there any airspace risk we need to manually review?”
+- “What is the expected landing area?”
+- “Does the predicted balloon corridor cross any restriction we need to manually review?”
 
 ## High-Value Prompt Patterns
 
@@ -107,42 +113,24 @@ Use this when you care about upper-level wind risk.
 
 ```text
 Check winds aloft for 18.2208, -67.1402 at 2026-04-27T14:00:00Z.
-Summarize the wind profile, call out any jet-stream concern, and explain how it could affect trajectory.
+Summarize the wind profile and call out any jet-stream concern.
 ```
 
-### Airspace hazard check
+### Balloon no-flight-zone check
 
-Use this when you want launch-area aviation awareness.
-
-```text
-Check airspace hazards within 25 km of 18.2208, -67.1402 for a launch around 2026-04-27T14:00:00Z.
-Summarize hazard status, major concerns, and what still requires manual NOTAM/TFR verification.
-```
-
-### Balloon selection
-
-Use this when hardware is still undecided.
+Use this when you want trajectory-based airspace awareness for the full balloon route.
 
 ```text
-I have a 0.433 kg payload and I’m deciding between available balloon options for a standard flight.
-List suitable balloon models and explain the tradeoffs.
-```
+Compute the balloon no-flight zone for this launch:
+Launch lat/lon: 18.2208, -67.1402
+Launch elevation: 11 m
+Launch datetime: 2026-04-27T14:00:00Z
+Ascent rate: 5.0 m/s
+Burst altitude: 30000 m
+Descent rate: 6.0 m/s
+Num runs: 10
 
-### Nozzle lift calculation
-
-Use this when you know your ascent goal but not your fill target.
-
-```text
-For a TA800 balloon using Helium with a 0.433 kg payload, calculate the nozzle lift needed for a 5.0 m/s ascent rate.
-Return the answer and explain what it means operationally.
-```
-
-### Balloon volume / fill estimate
-
-Use this when you already know nozzle lift.
-
-```text
-For a TA800 using Helium, payload 0.433 kg, and nozzle lift 2.0 kg, calculate balloon volume, gas mass, diameter, and free lift.
+Return status, intersecting restrictions, map-ready corridor context, and any manual review items.
 ```
 
 ### Trajectory simulation
@@ -150,18 +138,38 @@ For a TA800 using Helium, payload 0.433 kg, and nozzle lift 2.0 kg, calculate ba
 Use this when you want a landing prediction.
 
 ```text
-Run an ASTRA trajectory simulation for:
+Run a SondeHub trajectory simulation for:
 Launch lat/lon: 18.2208, -67.1402
 Launch elevation: 11 m
 Launch datetime: 2026-04-27T14:00:00Z
-Balloon: TA800
-Gas: Helium
-Payload: 0.433 kg
-Nozzle lift: 2.0 kg
-Parachute: SPH36
+Ascent rate: 5.0 m/s
+Burst altitude: 30000 m
+Descent rate: 6.0 m/s
 Num runs: 5
 
 Return the expected landing area, uncertainty, and key flight milestones.
+```
+
+### Repeatable Monte Carlo run
+
+Use this when you want to reproduce the same sampled SondeHub ensemble later.
+
+```text
+Run a SondeHub trajectory simulation for:
+Launch lat/lon: 18.2208, -67.1402
+Launch elevation: 11 m
+Launch datetime: 2026-04-27T14:00:00Z
+Ascent rate: 5.0 m/s
+Burst altitude: 30000 m
+Descent rate: 6.0 m/s
+Num runs: 10
+Seed: 1234
+Ascent spread: 5%
+Burst altitude spread: 1000 m
+Descent spread: 10%
+Launch time spread: 10 minutes
+
+Return the mean landing point, one-sigma uncertainty, and per-run landing points.
 ```
 
 ## Comparison Prompts
@@ -178,9 +186,10 @@ Tell me which window is best and why.
 ### Compare trajectory outcomes
 
 ```text
-Compare two trajectory cases for the same site and hardware:
+Compare two trajectory cases for the same site and flight profile:
 1. Launch at 2026-04-27T14:00:00Z
 2. Launch at 2026-04-27T16:00:00Z
+Ascent rate 5.0 m/s, burst altitude 30000 m, descent rate 6.0 m/s, 10 runs.
 
 Focus on landing area, uncertainty, and operational risk.
 ```
@@ -216,15 +225,15 @@ Give me a GO / CAUTION / NO-GO recommendation based on surface weather and expla
 ### Strong
 
 ```text
-We are planning a standard HAB launch from 18.2208, -67.1402 at 2026-04-27 10:00 AST.
-Payload weight is 0.433 kg. Balloon is TA800. Gas is Helium.
-Assess surface weather and airspace hazards.
+We are planning a standard HAB launch from 18.2208, -67.1402 at 2026-04-27T14:00:00Z.
+Launch elevation is 11 m. Ascent rate is 5.0 m/s, burst altitude is 30000 m, descent rate is 6.0 m/s, and we want 10 SondeHub runs.
+Assess surface weather, balloon no-flight-zone risk, and trajectory.
 Return:
 1. Overall GO / CAUTION / NO-GO
 2. Threshold violations
 3. Main operational risks
 4. Manual checks we still need to do
-5. Observation links
+5. Expected landing area and uncertainty
 ```
 
 ## Good Habits
@@ -233,17 +242,19 @@ Return:
 - Use exact numbers when you have them.
 - Ask STRATOS to compare options instead of asking one question at a time.
 - Ask it to state assumptions if you are unsure about an input.
+- Provide SondeHub profile rates directly for trajectory requests.
 - Ask for threshold violations explicitly when making launch decisions.
-- Ask for manual follow-up items when airspace or safety matters.
+- Ask for manual follow-up items when no-flight-zone or safety matters.
 
 ## Current Limits
 
 Keep these in mind when prompting:
 
-- STRATOS can only use the tool groups enabled by the client or route configuration.
-- Airspace responses still require **manual NOTAM/TFR verification**.
+- No-flight-zone responses still require **official manual restriction / NOTAM / TFR review** before launch.
+- If a no-flight-zone result is `UNVERIFIED`, treat it as incomplete coverage, not as clear airspace.
 - Weather and trajectory quality depend on forecast availability and input quality.
-- If you omit mission hardware, STRATOS may need to make assumptions or ask follow-up questions.
+- If you omit ascent rate, burst altitude, or descent rate, STRATOS will ask for those values before running trajectory prediction.
+- Balloon, payload, gas, nozzle lift, and parachute details do not replace SondeHub profile values.
 - If you ask for a launch recommendation, STRATOS should use surface weather before recommending a window.
 
 ## Recommended Starter Prompts
@@ -260,15 +271,19 @@ Launch site is 18.2208, -67.1402 and launch time is 2026-04-27T14:00:00Z.
 ```
 
 ```text
-Run a trajectory simulation for our planned launch and summarize expected burst altitude, landing area, and uncertainty.
+Run a SondeHub trajectory simulation for our planned launch. Launch site is 18.2208, -67.1402, elevation 11 m, launch time 2026-04-27T14:00:00Z, ascent rate 5.0 m/s, burst altitude 30000 m, descent rate 6.0 m/s, and 10 runs. Summarize landing area and uncertainty.
 ```
 
 ```text
-I only know payload mass and desired ascent rate. Help me choose a balloon and calculate the nozzle lift I should target.
+Compute the balloon no-flight zone for our planned launch. Launch site is 18.2208, -67.1402, elevation 11 m, launch time 2026-04-27T14:00:00Z, ascent rate 5.0 m/s, burst altitude 30000 m, descent rate 6.0 m/s, and 10 runs. Return status, intersecting restrictions, and manual review items.
+```
+
+```text
+I only know payload mass and desired ascent rate. What SondeHub profile values are still missing before STRATOS can run a trajectory?
 ```
 
 ## One-Line Cheat Sheet
 
 For the best STRATOS chat results, include:
 
-`where + when + what decision + mission hardware + desired output format`
+`where + when + launch elevation + ascent rate + burst altitude + descent rate + runs + desired output`
