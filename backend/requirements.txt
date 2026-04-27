@@ -9,7 +9,7 @@ mcp
 Flask>=3.0.0,<4.0.0
 deap>=1.4.1,<2.0.0
 gevent>=24.2.1
-matplotlib>=3.9.0
+matplotlib>=3.10.9
 numpy
 scipy
 six
