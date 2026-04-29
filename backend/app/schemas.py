@@ -7,6 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 McpToolGroupId = Literal["trajectory", "weather", "airspace"]
 
+CHAT_MESSAGE_MAX_CHARS = 8_000
+CHAT_HISTORY_MESSAGE_MAX_CHARS = 8_000
+CHAT_HISTORY_MAX_ITEMS = 30
+CHAT_PAYLOAD_MAX_BYTES = 512 * 1024
+CHAT_PAYLOAD_MAX_DEPTH = 20
+
 
 class ToolCallRecord(BaseModel):
     name: str
@@ -17,14 +23,17 @@ class ChatHistoryMessage(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     role: str
-    content: str
+    content: str = Field(max_length=CHAT_HISTORY_MESSAGE_MAX_CHARS)
 
 
 class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    message: str
-    history: list[ChatHistoryMessage] = Field(default_factory=list)
+    message: str = Field(max_length=CHAT_MESSAGE_MAX_CHARS)
+    history: list[ChatHistoryMessage] = Field(
+        default_factory=list,
+        max_length=CHAT_HISTORY_MAX_ITEMS,
+    )
     enabled_tool_groups: list[McpToolGroupId] | None = None
 
 
